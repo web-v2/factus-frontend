@@ -1,0 +1,12 @@
+<!-- src/app/components/search-box.component.html -->
+<div class="flex gap-2 mb-6">
+  <button (click)="sidebarService.toggleSidebar()" class="p-2 border rounded-md">
+    <i-lucide name="menu" class="h-4 w-4"></i-lucide>
+  </button>
+  <div class="flex-1 flex gap-2">
+    <input type="search" placeholder="Buscar..." class="flex-1 px-3 py-2 border rounded-md max-w-xl">
+    <button class="px-4 py-2 bg-[#4B69B9] text-white rounded-md">Buscar</button>
+  </div>  
+  <app-logout></app-logout>
+</div>
+

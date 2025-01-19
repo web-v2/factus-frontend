@@ -1,0 +1,29 @@
+<aside class="w-[200px] bg-[#4B69B9] text-white p-4 flex flex-col h-full transition-all duration-300 ease-in-out">
+  <nav class="space-y-2 flex-grow">
+    <button (click)="inicio()"
+      class="w-full flex items-center justify-start px-4 py-2 text-white hover:bg-white/20 rounded-lg">
+      <i-lucide name="home" class="mr-2 h-4 w-4"></i-lucide>
+      Inicio
+    </button>
+    <button (click)="clientes()"
+      class="w-full flex items-center justify-start px-4 py-2 text-white hover:bg-white/20 rounded-lg">
+      <i-lucide name="users" class="mr-2 h-4 w-4"></i-lucide>
+      Clientes
+    </button>
+    <button (click)="productos()"
+      class="w-full flex items-center justify-start px-4 py-2 text-white hover:bg-white/20 rounded-lg">
+      <i-lucide name="trophy" class="mr-2 h-4 w-4"></i-lucide>
+      Productos
+    </button>
+    <button (click)="facturas()"
+      class="w-full flex items-center justify-start px-4 py-2 text-white hover:bg-white/20 rounded-lg">
+      <i-lucide name="bar-chart-2" class="mr-2 h-4 w-4"></i-lucide>
+      Facturas
+    </button>
+  </nav>
+  <button (click)="logout()"
+    class="mt-auto w-full flex items-center justify-start px-4 py-2 text-white hover:bg-white/20 rounded-lg">
+    <i-lucide name="log-out" class="mr-2 h-4 w-4"></i-lucide>
+    Salir
+  </button>
+</aside>
