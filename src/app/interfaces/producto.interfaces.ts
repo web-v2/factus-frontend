@@ -9,5 +9,5 @@ export interface Producto {
   standard_code_id: number; // codigo para productos o serviciois se consume de tabla
   is_excluded: number; // excluido de iva o no
   tribute_id: number; // Tributto aplicado, se consume de endpoint tributo productos
-  withholding_taxes: string;
+  withholding_taxes: [];
 }
