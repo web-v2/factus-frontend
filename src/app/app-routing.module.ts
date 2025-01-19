@@ -5,8 +5,8 @@ import { LoginComponent } from './components/login/login.component';
 
 import { MainContentComponent } from './components/main-content/main-content.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
-/*import { ProductosComponent } from './components/productos/productos.component';
-import { FacturasComponent } from './components/facturas/facturas.component';*/
+import { ProductosComponent } from './components/productos/productos.component';
+/*import { FacturasComponent } from './components/facturas/facturas.component';*/
 const routes: Routes = [
   { path: '', component: LoginComponent },
   {
@@ -23,12 +23,12 @@ const routes: Routes = [
     component: ClientesComponent,
     canActivate: [AuthGuard],
   },
-  /*{
+  {
     path: 'productos',
     component: ProductosComponent,
     canActivate: [AuthGuard],
   },
-  {
+  /*{
     path: 'facturas',
     component: FacturasComponent,
     canActivate: [AuthGuard],
