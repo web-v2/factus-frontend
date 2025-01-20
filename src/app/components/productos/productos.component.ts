@@ -75,6 +75,7 @@ export class ProductosComponent implements OnInit {
   }
 
   onCancelarFormulario(): void {
+    this.cargarProductos();
     this.productoSeleccionado = null;
     this.productoNuevo = false;
   }

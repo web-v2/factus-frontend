@@ -30,6 +30,8 @@ import { ClientesComponent } from './components/clientes/clientes.component';
 import { ClienteFormComponent } from './components/cliente-form/cliente-form.component';
 import { ClienteAddComponent } from './components/cliente-add/cliente-add.component';
 import { ProductosComponent } from './components/productos/productos.component';
+import { ProductoAddComponent } from './components/producto-add/producto-add.component';
+import { ProductoFormComponent } from './components/producto-form/producto-form.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import { ProductosComponent } from './components/productos/productos.component';
     ClienteFormComponent,
     ClienteAddComponent,
     ProductosComponent,
+    ProductoAddComponent,
+    ProductoFormComponent
   ],
   imports: [
     BrowserModule,

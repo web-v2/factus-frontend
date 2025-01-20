@@ -75,6 +75,7 @@ export class ClientesComponent implements OnInit {
   }
 
   onCancelarFormulario(): void {
+    this.cargarClientes();
     this.clienteSeleccionado = null;
     this.clienteNuevo = false;
   }

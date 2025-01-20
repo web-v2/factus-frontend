@@ -27,7 +27,7 @@ export class ProductoService {
   }
 
   updateProducto(producto: Producto): Observable<void> {
-    const url = `${this.apiUrl}/producto/`;
+    const url = `${this.apiUrl}/productos`;
     return this.http.put<void>(url, producto).pipe(
       tap((response) => {
         console.log('Respuesta del servicio:', response);
@@ -40,7 +40,7 @@ export class ProductoService {
   }
 
   newProducto(producto: Producto): Observable<void> {
-    const url = `${this.apiUrl}/producto/new`;
+    const url = `${this.apiUrl}/productos/new`;
     return this.http.post<void>(url, producto).pipe(
       tap((response) => {
         console.log('Respuesta del servicio:', response);

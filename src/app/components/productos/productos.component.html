@@ -67,7 +67,7 @@
           <td class="py-2 px-4 border border-gray-300">{{ producto.code_reference }}</td>
             <td class="py-2 px-4 border border-gray-300">{{ producto.name }}</td>
             <td class="py-2 px-4 border border-gray-300">{{ producto.price }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{ producto.is_excluded }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ (producto.is_excluded==1)?'SI':'NO' }}</td>
             <td class="py-2 px-4 border border-gray-300 flex space-x-2">
               <!-- Botones CRUD -->
               <button
@@ -91,4 +91,22 @@
     </div>
   </ng-template>
 
+  <!-- Crear producto, muestra su formulario -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div *ngIf="productoNuevo" class="content-center py-12">
+      <app-producto-add
+      (cancelarFormulario)="onCancelarFormulario()"
+      ></app-producto-add>
+    </div>
+  </div>
+
+  <!-- Si un producto está seleccionado, muestra su formulario -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div *ngIf="productoSeleccionado" class="content-center py-12">
+      <app-producto-form
+      [productoSeleccionado]="productoSeleccionado"
+      (cancelarFormulario)="onCancelarFormulario()"
+      ></app-producto-form>
+    </div>
+  </div>
 </div>
