@@ -52,7 +52,7 @@ export class UtilService {
   }
 
   getTributos(): Observable<Tributos[]> {
-    const urlPeticion = `${this.apiUrl}/v1/tributes`;
+    const urlPeticion = `${this.apiUrl}/v1/tributes/products?name=`;
     const token = localStorage.getItem('access_token');
 
     return this.http
