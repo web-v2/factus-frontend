@@ -1,0 +1,71 @@
+<!-- src/app/modules/productos/components/productos-form/productos-form.component.html -->
+<div *ngIf="productoSeleccionado" class="flex justify-center items-center min-h-screen">
+  <div class="bg-white w-11/12 md:w-1/2 rounded-lg p-6">
+    <div class="mb-3 bg-[#E67553] text-white rounded-lg p-2">
+      <h2 class="text-2xl font-bold text-center mb-6">Actualizar Producto</h2>
+    </div>
+    <form [formGroup]="productoForm" (ngSubmit)="guardarCambios()">
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Código</label>
+        <input formControlName="code_reference" [(ngModel)]="productoSeleccionado.code_reference" type="text" class="w-full p-2 border rounded-lg">
+        <div *ngIf="productoForm.get('code_reference')?.invalid && productoForm.get('code_reference')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Nombre Producto</label>
+        <input formControlName="name" [(ngModel)]="productoSeleccionado.name" type="text" class="w-full p-2 border rounded-lg">
+        <div *ngIf="productoForm.get('name')?.invalid && productoForm.get('name')?.touched" class="text-red-500 text-sm">Campo obligatorio. Mínimo 3 caracteres.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Cantidad</label>
+        <input formControlName="quantity" [(ngModel)]="productoSeleccionado.quantity" type="number" class="w-full p-2 border rounded-lg">
+        <div *ngIf="productoForm.get('quantity')?.invalid && productoForm.get('quantity')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Precio</label>
+        <input formControlName="price" [(ngModel)]="productoSeleccionado.price" type="number" class="w-full p-2 border rounded-lg">
+        <div *ngIf="productoForm.get('price')?.invalid && productoForm.get('price')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Unidad de Medida</label>
+        <select formControlName="unit_measure_id" [(ngModel)]="productoSeleccionado.unit_measure_id" class="w-full p-2 border rounded-lg">
+          <option *ngFor="let unit of unidadMedidas" [value]="unit.id">
+            {{unit.code}} - {{unit.name}}
+          </option>
+        </select>
+        <div *ngIf="productoForm.get('unit_measure_id')?.invalid && productoForm.get('unit_measure_id')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">IVA</label>
+        <select formControlName="is_excluded" [(ngModel)]="productoSeleccionado.is_excluded" class="w-full p-2 border rounded-lg">
+          <option value="1">SI</option>
+          <option value="0">No</option>
+        </select>
+        <div *ngIf="productoForm.get('is_excluded')?.invalid && productoForm.get('is_excluded')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Tributo</label>
+        <select formControlName="tribute_id" class="w-full p-2 border rounded-lg" [(ngModel)]="productoSeleccionado.tribute_id">
+          <option *ngFor="let tb of tributos" [value]="tb.id" [title]="tb.description">
+            {{tb.code}} - {{tb.name}}
+          </option>
+        </select>
+        <div *ngIf="productoForm.get('tribute_id')?.invalid && productoForm.get('tribute_id')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end space-x-2">
+        <button type="button" (click)="cancelar()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg" [disabled]="productoForm.invalid" >Guardar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+

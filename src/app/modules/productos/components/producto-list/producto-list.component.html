@@ -1,0 +1,114 @@
+<!-- src/app/modules/productos/components/producto-list/producto-list.component.html -->
+<div class="p-4">
+  <div class="mb-2 bg-[#E67553] text-white rounded-lg p-2">
+    <div class="flex items-center gap-2">
+      <div class="flex-1">
+        <h1 class="text-2xl font-bold mb-2">Gestión de Productos</h1>
+      </div>
+      <div class="hidden md:block">
+        <div class="w-32 h-32 relative">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <i class="fas fa-box"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="productos.length === 0; else table" class="bg-amber-300 text-center rounded-md">
+    No hay productos que mostrar!
+  </div>
+
+  <ng-template #table>
+    <div class="grid grid-cols-12 gap-4 mb-4" *ngIf="!productoSeleccionado && !productoNuevo">
+      <div class="col-span-4">
+        <input
+          type="number"
+          [(ngModel)]="filtroId"
+          placeholder="Buscar producto por # Id"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Barra de búsqueda por nombre -->
+      <div class="col-span-8">
+        <input
+          type="text"
+          [(ngModel)]="filtroName"
+          placeholder="Buscar producto por nombre..."
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto" *ngIf="!productoSeleccionado && !productoNuevo">
+      <table class="min-w-full border-collapse border border-gray-300">
+        <thead>
+          <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
+            <th class="py-2 px-4 border border-gray-300">ID</th>
+            <th class="py-2 px-4 border border-gray-300">Nombre</th>
+            <th class="py-2 px-4 border border-gray-300">price</th>
+            <th class="py-2 px-4 border border-gray-300">Iva</th>
+            <th class="py-2 px-4 border border-gray-300">Acciones
+              <button
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+              (click)="nuevoProducto()"
+              >
+                <i class="fas fa-plus"></i>
+                Nuevo
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let producto of productosFiltrados()"
+            class="hover:bg-gray-100"
+          >
+          <td class="py-2 px-4 border border-gray-300">{{ producto.code_reference }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ producto.name }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ producto.price }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ (producto.is_excluded==1)?'SI':'NO' }}</td>
+            <td class="py-2 px-4 border border-gray-300 flex space-x-2">
+              <!-- Botones CRUD -->
+              <button
+                class="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-700"
+                (click)="editarProduto(producto)"
+              >
+                <i class="fas fa-edit"></i>
+                Editar
+              </button>
+              <button
+                class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-700"
+                (click)="eliminarProducto(producto.code_reference)"
+              >
+                <i class="far fa-trash-alt"></i>
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+
+  <!-- Crear producto, muestra su formulario -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div *ngIf="productoNuevo" class="content-center py-12">
+      <app-producto-add
+      (cancelarFormulario)="onCancelarFormulario()"
+      ></app-producto-add>
+    </div>
+  </div>
+
+  <!-- Si un producto está seleccionado, muestra su formulario -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div *ngIf="productoSeleccionado" class="content-center py-12">
+      <app-producto-form
+      [productoSeleccionado]="productoSeleccionado"
+      (cancelarFormulario)="onCancelarFormulario()"
+      ></app-producto-form>
+    </div>
+  </div>
+</div>
+

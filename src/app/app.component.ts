@@ -1,6 +1,6 @@
 import { Component, computed, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SidebarService } from './services/sidebar.service';
+import { SidebarService } from './core/services/sidebar.service';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +10,12 @@ import { SidebarService } from './services/sidebar.service';
 export class AppComponent implements OnInit {
   title: string = 'factus-frontend-v2';
   user: any = '';
-
-  constructor(public sidebarService: SidebarService, private router: Router) {}
+  isLoginPage: boolean = false;
+  constructor(public sidebarService: SidebarService, private router: Router) {
+    this.router.events.subscribe(() => {
+      this.isLoginPage = this.router.url === '/login';
+    });
+  }
 
   ngOnInit() {
     this.user = localStorage.getItem('userSession');

@@ -1,0 +1,97 @@
+<!-- src/app/modules/facturas/components/factura-list/factura-list.component.html -->
+<div class="p-4">
+  <div class="mb-2 bg-[#E67553] text-white rounded-lg p-2">
+    <div class="flex items-center gap-2">
+      <div class="flex-1">
+        <h1 class="text-2xl font-bold mb-2">Gestión de Facturas</h1>
+      </div>
+      <div class="hidden md:block">
+        <div class="w-32 h-32 relative">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <i class="fas fa-file-invoice"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="facturas.length === 0; else table" class="bg-amber-300 text-center rounded-md">
+    No hay facturas que mostrar!
+  </div>
+
+  <ng-template #table>
+    <div class="grid grid-cols-12 gap-4 mb-4" *ngIf="!facturaSeleccionada && !facturaNueva">
+      <div class="col-span-4">
+        <input
+          type="number"
+          [(ngModel)]="filtroId"
+          placeholder="Buscar factura por # Id"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Barra de búsqueda por nombre -->
+      <div class="col-span-8">
+        <input
+          type="text"
+          [(ngModel)]="filtroName"
+          placeholder="Buscar factura por nombre..."
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto" *ngIf="!facturaSeleccionada && !facturaNueva">
+      <table class="min-w-full border-collapse border border-gray-300">
+        <thead>
+          <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
+            <th class="py-2 px-4 border border-gray-300">ID</th>
+            <th class="py-2 px-4 border border-gray-300">Nombre</th>
+            <th class="py-2 px-4 border border-gray-300">price</th>
+            <th class="py-2 px-4 border border-gray-300">Acciones
+              <button
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+              (click)="nuevafactura()"
+              >
+                <i class="fas fa-plus"></i>
+                Nuevo
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let factura of facturasFiltradas()"
+            class="hover:bg-gray-100"
+          >
+          <td class="py-2 px-4 border border-gray-300">{{ factura.reference_code }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ factura.numbering_range_id }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ factura.payment_method_code }}</td>
+            <td class="py-2 px-4 border border-gray-300 flex space-x-2">
+              <!-- Botones CRUD -->
+              <button
+                class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-700"
+                (click)="eliminarfactura(factura.reference_code)"
+              >
+                <i class="far fa-trash-alt"></i>
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+
+  <!-- Crear factura, muestra su formulario -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div *ngIf="facturaNueva" class="content-center py-12">
+      <app-factura-add
+      (cancelarFormulario)="onCancelarFormulario()"
+      ></app-factura-add>
+    </div>
+  </div>
+</div>
+
+
+

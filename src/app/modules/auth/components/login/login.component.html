@@ -1,0 +1,56 @@
+
+<!-- src/app/modules/auth/components/login/login.component.html -->
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold text-center text-gray-800">Login</h2>
+
+    <form (ngSubmit)="onLogin()" class="space-y-4">
+      <!-- Nombre de usuario -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Nombre de usuario</label>
+        <input
+          id="email"
+          type="text"
+          [(ngModel)]="email"
+          name="email"
+          required
+          class="w-full px-4 py-2 mt-1 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Ingresa tu nombre de usuario"
+        />
+      </div>
+
+      <!-- Contraseña -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          class="w-full px-4 py-2 mt-1 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Contraseña"
+        />
+      </div>
+
+
+      <!-- Botón de login -->
+      <div>
+        <button
+          type="submit"
+          class="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Iniciar sesión
+        </button>
+        <span class="text-red-600 text-center">{{errorMessage}}</span>
+      </div>
+    </form>
+
+    <!-- Link a iniciar sesión -->
+    <p class="text-center text-sm text-gray-600">
+      ¿Aun no tienes una cuenta?
+      <a routerLink="/register" class="font-medium text-indigo-600 hover:text-indigo-500">Registrarse</a>
+    </p>
+  </div>
+  </div>
+

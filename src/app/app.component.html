@@ -1,16 +1,22 @@
-<div class="flex min-h-screen bg-slate-100">
+<div *ngIf="!isLoginPage" class="flex min-h-screen bg-slate-100">
   <!-- Sidebar -->
   <div *ngIf="(sidebarService.sidebarVisible$ | async)" class="flex-shrink-0">
-    <app-sidebar *ngIf="user"></app-sidebar>
+    <app-sidebar></app-sidebar>
   </div>
 
   <!-- Contenido Principal -->
   <main class="flex-1 p-6">
-    <app-search-box *ngIf="user"></app-search-box>
-    <div >
+    <app-search-box></app-search-box>
+    <div>
       <router-outlet></router-outlet>
     </div>
   </main>
 </div>
 
-<app-footer></app-footer>
+<!-- Login Page -->
+<div *ngIf="isLoginPage">
+  <router-outlet></router-outlet>
+</div>
+
+<app-footer *ngIf="!isLoginPage"></app-footer>
+

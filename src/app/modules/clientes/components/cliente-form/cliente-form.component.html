@@ -1,0 +1,117 @@
+<!-- src/app/modules/clientes/components/cliente-form/cliente-form.component.html -->
+<div *ngIf="clienteSeleccionado" class="flex justify-center items-center min-h-screen">
+  <div class="bg-white w-11/12 md:w-1/2 rounded-lg p-6">
+    <div class="mb-3 bg-[#E67553] text-white rounded-lg p-2">
+      <h2 class="text-2xl font-bold text-center mb-6">Editar Información del Cliente</h2>
+    </div>
+    <form (ngSubmit)="guardarCambios()">
+      <!-- Campos del formulario -->
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Tipo de Organización</label>
+        <select [(ngModel)]="clienteSeleccionado.legal_organization_id" name="legal_organization_id" required
+          class="w-full p-2 border rounded-lg">
+          <option value="1">Persona Jurídica</option>
+          <option value="2">Persona Natural</option>
+        </select>
+      </div>
+
+      <!-- Campos condicionales para Persona Jurídica -->
+      <div class="mb-4" *ngIf="clienteSeleccionado.legal_organization_id == 1">
+        <label class="block text-sm font-medium text-gray-700">Dv</label>
+        <input [(ngModel)]="clienteSeleccionado.dv" name="dv" type="text"
+          class="w-full p-2 border rounded-lg">
+      </div>
+
+      <div class="mb-4" *ngIf="clienteSeleccionado.legal_organization_id == 1">
+        <label class="block text-sm font-medium text-gray-700">Company</label>
+        <input [(ngModel)]="clienteSeleccionado.company" name="company" type="text"
+          class="w-full p-2 border rounded-lg">
+      </div>
+
+      <div class="mb-4" *ngIf="clienteSeleccionado.legal_organization_id == 1">
+        <label class="block text-sm font-medium text-gray-700">Nombre Corto</label>
+        <input [(ngModel)]="clienteSeleccionado.trade_name" name="trade_name" type="text"
+          class="w-full p-2 border rounded-lg">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Tipo Ident.</label>
+        <select [(ngModel)]="clienteSeleccionado.identification_document_id" name="identification_document_id" required class="w-full p-2 border rounded-lg">
+          <option value="1">Registro civil</option>
+          <option value="2">Tarjeta de identidad</option>
+          <option value="3">Cédula de ciudadanía</option>
+          <option value="4">Tarjeta de extranjería</option>
+          <option value="5">Cédula de extranjería</option>
+          <option value="6">NIT</option>
+          <option value="7">Pasaporte</option>
+          <option value="8">Documento de identificación extranjero</option>
+          <option value="9">PEP</option>
+          <option value="10">NIT otro país</option>
+          <option value="11">NUIP*</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Identificación</label>
+        <input [(ngModel)]="clienteSeleccionado.identification" name="identification" type="number" readonly
+          class="w-full p-2 border rounded-lg disabled:opacity-75">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Nombre</label>
+        <input [(ngModel)]="clienteSeleccionado.names" name="names" type="text" required
+          class="w-full p-2 border rounded-lg">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Dirección</label>
+        <input [(ngModel)]="clienteSeleccionado.address" name="address" type="text" required
+          class="w-full p-2 border rounded-lg">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+        <input [(ngModel)]="clienteSeleccionado.email" name="email" type="email" required
+          class="w-full p-2 border rounded-lg">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+        <input [(ngModel)]="clienteSeleccionado.phone" name="phone" type="number" required
+          class="w-full p-2 border rounded-lg">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Tributo</label>
+        <select [(ngModel)]="clienteSeleccionado.tribute_id" name="tribute_id" required
+          class="w-full p-2 border rounded-lg">
+          <option value="18">IVA</option>
+          <option value="21">No aplica</option>
+        </select>
+      </div>
+
+      <!-- Módulo de Municipio -->
+      <div class="mb-4">
+        <label for="municipality_id">Municipio</label>
+        <select
+          id="municipality"
+          [(ngModel)]="clienteSeleccionado.municipality_id"
+          name="municipality_id"
+          class="w-full p-2 border rounded-lg"
+        >
+          <option *ngFor="let municipio of municipios" [value]="municipio.id">
+            {{municipio.department}}-{{municipio.name}}-{{municipio.code}}-{{municipio.id}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end space-x-2">
+        <button type="button" (click)="cancelar()"
+          class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
