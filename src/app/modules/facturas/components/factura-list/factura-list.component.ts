@@ -1,7 +1,7 @@
 //src/app/modules/facturas/components/factura-list/factura-list.component
 import { Component, OnInit } from '@angular/core';
 import { FacturaService } from '../../services/factura.service';
-import { Factura } from '../../interfaces/facturas.interfaces';
+import { Facturas } from '../../interfaces/facturas.interfaces';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -10,12 +10,23 @@ import Swal from 'sweetalert2';
   styleUrls: ['./factura-list.component.css'],
 })
 export class FacturaListComponent implements OnInit {
-  facturas: Factura[] = [];
+  facturas: Facturas = {
+    data: [],
+    pagination: {
+      total: 0,
+      per_page: 0,
+      current_page: 0,
+      last_page: 0,
+      from: 0,
+      to: 0,
+      links: [],
+    },
+  };
 
   filtroName: string = '';
   filtroId: number = 0;
 
-  facturaSeleccionada: Factura | null = null;
+  facturaSeleccionada: Facturas | null = null;
   facturaNueva: boolean = false;
 
   constructor(private facturaService: FacturaService) {}
@@ -26,11 +37,18 @@ export class FacturaListComponent implements OnInit {
 
   cargarfacturas(): void {
     this.facturaService.getFacturasMock().subscribe({
-      next: (datafacturas) => {
-        if (datafacturas && Array.isArray(datafacturas)) {
+      next: (datafacturas: Facturas) => {
+        if (
+          datafacturas &&
+          datafacturas.data &&
+          Array.isArray(datafacturas.data)
+        ) {
           this.facturas = datafacturas;
         } else {
-          console.warn('La API no devolvió un arreglo válido:', datafacturas);
+          console.warn(
+            'La API no devolvió un objeto Facturas válido:',
+            datafacturas
+          );
         }
       },
       error: (error) => {
@@ -48,29 +66,39 @@ export class FacturaListComponent implements OnInit {
     this.facturaNueva = true;
   }
 
-  facturasFiltradas(): Factura[] {
+  facturasFiltradas(): Facturas {
     if (!this.filtroId && !this.filtroName) {
       return this.facturas;
     }
 
-    return this.facturas.filter((factura) => {
-      const cumpleFiltroId = this.filtroId
-        ? factura.reference_code.toString().includes(this.filtroId.toString())
+    const filtroId = this.filtroId ? this.filtroId.toString() : null;
+    const filtroName = this.filtroName ? this.filtroName.toLowerCase() : null;
+
+    const facturasFiltradas = this.facturas.data.filter((factura) => {
+      const cumpleFiltroId = filtroId
+        ? factura.number.toString().includes(filtroId)
         : true;
-      const cumpleFiltroName = this.filtroName
-        ? factura.reference_code
-            .toLowerCase()
-            .includes(this.filtroName.toLowerCase())
+      const cumpleFiltroName = filtroName
+        ? factura.identification.toLowerCase().includes(filtroName)
         : true;
 
       return cumpleFiltroId && cumpleFiltroName;
     });
+
+    return {
+      ...this.facturas,
+      data: facturasFiltradas,
+    };
   }
 
   onCancelarFormulario(): void {
     this.cargarfacturas();
     this.facturaSeleccionada = null;
     this.facturaNueva = false;
+  }
+
+  verfactura(id: string): void {
+    console.log('Factura a ver:' + id);
   }
 
   eliminarfactura(id: string): void {
@@ -84,10 +112,10 @@ export class FacturaListComponent implements OnInit {
       confirmButtonText: 'Sí, eliminar',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.facturas = this.facturas.filter(
-          (factura) => factura.reference_code !== id
+        this.facturas.data = this.facturas.data.filter(
+          (factura) => factura.number !== id
         );
-        Swal.fire('¡Eliminado!', 'El factura ha sido eliminado.', 'success');
+        Swal.fire('¡Eliminado!', 'La factura ha sido eliminada.', 'success');
       }
     });
   }

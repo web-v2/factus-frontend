@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div *ngIf="facturas.length === 0; else table" class="bg-amber-300 text-center rounded-md">
+  <div *ngIf="facturas.data.length === 0; else table" class="bg-amber-300 text-center rounded-md">
     No hay facturas que mostrar!
   </div>
 
@@ -46,8 +46,11 @@
         <thead>
           <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
             <th class="py-2 px-4 border border-gray-300">ID</th>
-            <th class="py-2 px-4 border border-gray-300">Nombre</th>
+            <th class="py-2 px-4 border border-gray-300">Fecha</th>
+            <th class="py-2 px-4 border border-gray-300">Cliente</th>
             <th class="py-2 px-4 border border-gray-300">price</th>
+            <th class="py-2 px-4 border border-gray-300">DIAN</th>
+            <th class="py-2 px-4 border border-gray-300">EMAIL</th>
             <th class="py-2 px-4 border border-gray-300">Acciones
               <button
               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
@@ -60,24 +63,34 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let factura of facturasFiltradas()"
-            class="hover:bg-gray-100"
-          >
-          <td class="py-2 px-4 border border-gray-300">{{ factura.reference_code }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{ factura.numbering_range_id }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{ factura.payment_method_code }}</td>
+          <tr *ngFor="let factura of facturasFiltradas().data; let i = index"
+            class="hover:bg-gray-100">
+            <td class="py-2 px-4 border border-gray-300">{{ factura.number }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ factura.created_at }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{factura.identification}}-{{ factura.names }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ factura.total }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ factura.status }}</td>
+            <td class="py-2 px-4 border border-gray-300">{{ factura.send_email }}</td>
             <td class="py-2 px-4 border border-gray-300 flex space-x-2">
               <!-- Botones CRUD -->
               <button
+              class="bg-zinc-800 text-white px-2 py-1 rounded-lg hover:bg-slate-400"
+              (click)="verfactura(factura.number)"
+            >
+              <i class="fas fa-eye"></i>
+              Ver
+            </button>
+              <button
                 class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-700"
-                (click)="eliminarfactura(factura.reference_code)"
+                (click)="eliminarfactura(factura.number)"
               >
                 <i class="far fa-trash-alt"></i>
                 Eliminar
               </button>
+
             </td>
           </tr>
+
         </tbody>
       </table>
     </div>
