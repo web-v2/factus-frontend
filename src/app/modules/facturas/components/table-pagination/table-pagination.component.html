@@ -1,0 +1,35 @@
+<div class="flex items-center justify-between mt-4">
+  <!-- Botón "Anterior" -->
+  <button
+    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+    [disabled]="!pagination.links[0]?.url"
+    (click)="changePage(pagination.links[0]?.page)"
+  >
+    {{ pagination.links[0]?.label | decodeHtml }}
+  </button>
+
+  <!-- Páginas numeradas -->
+  <ul class="flex items-center space-x-2">
+    <li
+      *ngFor="let link of pagination.links.slice(1, pagination.links.length - 1)"
+      [class.active]="link.active"
+      (click)="changePage(link.page)"
+      class="px-4 py-2 rounded-lg cursor-pointer"
+      [ngClass]="{
+        'bg-blue-500 text-white': link.active,
+        'bg-gray-200 text-gray-700 hover:bg-gray-300': !link.active
+      }"
+    >
+      {{ link.label }}
+    </li>
+  </ul>
+
+  <!-- Botón "Siguiente" -->
+  <button
+    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+    [disabled]="!pagination.links[pagination.links.length - 1]?.url"
+    (click)="changePage(pagination.links[pagination.links.length - 1]?.page)"
+  >
+    {{ pagination.links[pagination.links.length - 1]?.label | decodeHtml }}
+  </button>
+</div>

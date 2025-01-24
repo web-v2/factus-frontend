@@ -17,7 +17,7 @@ export class ClienteListComponent implements OnInit {
 
   clienteSeleccionado: Cliente | null = null;
   clienteNuevo: boolean = false;
-
+  loader: boolean = true;
   constructor(private clienteService: ClienteService) {}
 
   ngOnInit(): void {
@@ -35,6 +35,7 @@ export class ClienteListComponent implements OnInit {
         }
       },
       error: (error) => {
+        this.loader = false;
         console.error('Error al obtener clientes:', error);
         Swal.fire({
           icon: 'error',

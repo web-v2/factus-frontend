@@ -1,0 +1,10 @@
+@media (max-width: 768px) {
+  table {
+    font-size: 0.9rem;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+  }
+}

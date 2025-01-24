@@ -19,12 +19,38 @@ export class FacturaService {
 
   constructor(private http: HttpClient) {}
 
-  getFacturas(): Observable<any[]> {
+  getFacturas(): Observable<Facturas> {
     const urlPeticion = `${this.apiUrl}/v1/bills`;
     const token = localStorage.getItem('access_token');
 
     return this.http
-      .get<RespFacturas>(urlPeticion, {
+      .get<any>(urlPeticion, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .pipe(
+        tap((response) => {
+          if (response.message === 'Solicitud exitosa') {
+            console.log('Respuesta OK del servicio en Facturas', response.data);
+          }
+        }),
+        map((response) => response.data),
+        catchError((error) => {
+          console.error('Error en el servicio:', error);
+          return throwError(() => new Error('Error al conectar con la API.'));
+        })
+      );
+  }
+
+  getBills(page: number): Observable<Facturas> {
+    const urlPeticion = `${this.apiUrl}/v1/bills?page=${page}`;
+    const token = localStorage.getItem('access_token');
+
+    return this.http
+      .get<any>(urlPeticion, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -108,7 +134,7 @@ export class FacturaService {
           names: 'Pepito Perez',
           email: 'pepito@hotmail.com',
           total: '50000.00',
-          status: 1,
+          status: 0,
           errors: [
             'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
             'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',

@@ -15,15 +15,23 @@
     </div>
   </div>
 
-  <div *ngIf="facturas.data.length === 0; else table" class="bg-amber-300 text-center rounded-md">
-    No hay facturas que mostrar!
+  <div *ngIf="facturas.length === 0; else table" class="text-center rounded-md">
+    <div *ngIf="loader" class="flex flex-col items-center justify-center space-y-2">
+      <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-gray-700 font-semibold">Cargando...</p>
+    </div>
+    <div *ngIf="!loader" class="bg-amber-300">
+      <br>
+      <h1>No hay facturas que mostrar!</h1>
+      <br>
+    </div>
   </div>
 
   <ng-template #table>
     <div class="grid grid-cols-12 gap-4 mb-4" *ngIf="!facturaSeleccionada && !facturaNueva">
       <div class="col-span-4">
         <input
-          type="number"
+          type="text"
           [(ngModel)]="filtroId"
           placeholder="Buscar factura por # Id"
           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -35,64 +43,86 @@
         <input
           type="text"
           [(ngModel)]="filtroName"
-          placeholder="Buscar factura por nombre..."
+          placeholder="Buscar factura por cliente..."
           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
     </div>
 
-    <div class="overflow-x-auto" *ngIf="!facturaSeleccionada && !facturaNueva">
-      <table class="min-w-full border-collapse border border-gray-300">
-        <thead>
-          <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
-            <th class="py-2 px-4 border border-gray-300">ID</th>
-            <th class="py-2 px-4 border border-gray-300">Fecha</th>
-            <th class="py-2 px-4 border border-gray-300">Cliente</th>
-            <th class="py-2 px-4 border border-gray-300">price</th>
-            <th class="py-2 px-4 border border-gray-300">DIAN</th>
-            <th class="py-2 px-4 border border-gray-300">EMAIL</th>
-            <th class="py-2 px-4 border border-gray-300">Acciones
-              <button
-              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-              (click)="nuevafactura()"
-              >
-                <i class="fas fa-plus"></i>
-                Nuevo
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let factura of facturasFiltradas().data; let i = index"
-            class="hover:bg-gray-100">
-            <td class="py-2 px-4 border border-gray-300">{{ factura.number }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{ factura.created_at }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{factura.identification}}-{{ factura.names }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{ factura.total }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{ factura.status }}</td>
-            <td class="py-2 px-4 border border-gray-300">{{ factura.send_email }}</td>
-            <td class="py-2 px-4 border border-gray-300 flex space-x-2">
-              <!-- Botones CRUD -->
-              <button
-              class="bg-zinc-800 text-white px-2 py-1 rounded-lg hover:bg-slate-400"
-              (click)="verfactura(factura.number)"
+    <div class="overflow-x-auto w-full" *ngIf="!facturaSeleccionada && !facturaNueva">
+        <table class="min-w-full table-auto border-collapse border border-gray-300">
+          <thead>
+            <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
+              <th class="py-2 px-4 border border-gray-300">Número Factura</th>
+              <th class="py-2 px-4 border border-gray-300">Fecha Emisión</th>
+              <th class="py-2 px-4 border border-gray-300">Datos del Cliente</th>
+              <th class="py-2 px-4 border border-gray-300">Valor Factura</th>
+              <th class="py-2 px-4 border border-gray-300">DIAN</th>
+              <th class="py-2 px-4 border border-gray-300">EMAIL</th>
+              <th class="py-2 px-4 border border-gray-300">Acciones
+                <button
+                  class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                  (click)="nuevafactura()"
+                >
+                  <i class="fas fa-plus"></i> Nuevo
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let factura of facturasFiltradas(); let i = index"
+              class="hover:bg-red-200 transition-colors"
             >
-              <i class="fas fa-eye"></i>
-              Ver
-            </button>
-              <button
-                class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-700"
-                (click)="eliminarfactura(factura.number)"
-              >
-                <i class="far fa-trash-alt"></i>
-                Eliminar
-              </button>
-
-            </td>
-          </tr>
-
-        </tbody>
-      </table>
+              <td class="py-2 px-4 border border-gray-300">{{ factura.number }}</td>
+              <td class="py-2 px-4 border border-gray-300">{{ factura.created_at }}</td>
+              <td class="py-2 px-4 border border-gray-300">
+                {{ factura.identification }} - {{ factura.names }}
+              </td>
+              <td class="py-2 px-4 border border-gray-300">{{ factura.total }}</td>
+              <td class="py-2 px-4 border border-gray-300 text-center">
+                <button
+                  [class]="factura.status === 1 ? 'bg-green-500' : 'bg-red-500'"
+                  class="text-white px-2 py-1 rounded-full"
+                >
+                  {{ factura.status === 1 ? 'Validada' : 'No Validada' }}
+                </button>
+              </td>
+              <td class="py-2 px-4 border border-gray-300 text-center">
+                <i
+                  [class]="factura.send_email === 1 ? 'fas fa-envelope text-green-500' : 'fas fa-envelope-open text-red-500'"
+                  class="text-xl"
+                ></i>
+              </td>
+              <td class="py-2 px-4 border border-gray-300 flex space-x-2">
+                <!-- Botón Ver -->
+                <button
+                  class="bg-zinc-800 text-white px-2 py-1 rounded-lg hover:bg-slate-400"
+                  (click)="verfactura(factura.number)"
+                >
+                  <i class="fas fa-eye"></i> Ver
+                </button>
+                <!-- Botón Ver PDF -->
+                <button
+                  class="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-700"
+                  (click)="verPdf(factura.number)"
+                >
+                  <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <!-- Botón Ver XML -->
+                <button
+                  class="bg-yellow-500 text-white px-2 py-1 rounded-lg hover:bg-yellow-600"
+                  (click)="verXml(factura.number)"
+                >
+                  <i class="fas fa-file-code"></i> XML
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <app-table-pagination
+        (facturasChange)="onFacturasChange($event)"
+      ></app-table-pagination>
     </div>
   </ng-template>
 

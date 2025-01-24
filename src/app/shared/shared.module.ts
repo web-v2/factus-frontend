@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { AuthModule } from '../modules/auth/auth.module';
+import { DecodeHtmlPipe } from './pipes/decode-html.pipe';
 import {
   LucideAngularModule,
   Home,
@@ -24,10 +24,10 @@ import { SearchBoxComponent } from './components/search-box/search-box.component
     SidebarComponent,
     SearchBoxComponent,
     FooterComponent,
+    DecodeHtmlPipe,
   ],
   imports: [
     CommonModule,
-    BrowserModule,
     RouterModule,
     LucideAngularModule.pick({
       Home,
@@ -45,6 +45,7 @@ import { SearchBoxComponent } from './components/search-box/search-box.component
     SidebarComponent,
     SearchBoxComponent,
     FooterComponent,
+    DecodeHtmlPipe,
   ],
 })
 export class SharedModule {}

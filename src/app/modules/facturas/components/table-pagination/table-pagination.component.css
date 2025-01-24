@@ -1,0 +1,14 @@
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li.active {
+  background-color: #2563eb; /* Azul */
+  color: #fff;
+}
+
+li:hover {
+  cursor: pointer;
+}

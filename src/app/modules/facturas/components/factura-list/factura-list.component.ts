@@ -1,7 +1,11 @@
 //src/app/modules/facturas/components/factura-list/factura-list.component
 import { Component, OnInit } from '@angular/core';
 import { FacturaService } from '../../services/factura.service';
-import { Facturas } from '../../interfaces/facturas.interfaces';
+import {
+  Datum,
+  Facturas,
+  Pagination,
+} from '../../interfaces/facturas.interfaces';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -10,40 +14,31 @@ import Swal from 'sweetalert2';
   styleUrls: ['./factura-list.component.css'],
 })
 export class FacturaListComponent implements OnInit {
-  facturas: Facturas = {
-    data: [],
-    pagination: {
-      total: 0,
-      per_page: 0,
-      current_page: 0,
-      last_page: 0,
-      from: 0,
-      to: 0,
-      links: [],
-    },
-  };
+  facturas: Datum[] = [];
+  pagination!: Pagination;
 
   filtroName: string = '';
-  filtroId: number = 0;
+  filtroId: string = '';
 
   facturaSeleccionada: Facturas | null = null;
   facturaNueva: boolean = false;
-
+  loader: boolean = true;
   constructor(private facturaService: FacturaService) {}
 
   ngOnInit(): void {
-    this.cargarfacturas();
+    this.loadFacturas(1);
   }
 
-  cargarfacturas(): void {
-    this.facturaService.getFacturasMock().subscribe({
+  loadFacturas(page: number): void {
+    this.facturaService.getBills(page).subscribe({
       next: (datafacturas: Facturas) => {
         if (
           datafacturas &&
           datafacturas.data &&
           Array.isArray(datafacturas.data)
         ) {
-          this.facturas = datafacturas;
+          this.facturas = datafacturas.data;
+          this.pagination = datafacturas.pagination;
         } else {
           console.warn(
             'La API no devolvió un objeto Facturas válido:',
@@ -52,6 +47,7 @@ export class FacturaListComponent implements OnInit {
         }
       },
       error: (error) => {
+        this.loader = false;
         console.error('Error al obtener facturas:', error);
         Swal.fire({
           icon: 'error',
@@ -62,43 +58,52 @@ export class FacturaListComponent implements OnInit {
     });
   }
 
+  onFacturasChange(facturas: Datum[]): void {
+    this.facturas = facturas;
+  }
+
   nuevafactura(): void {
     this.facturaNueva = true;
   }
 
-  facturasFiltradas(): Facturas {
+  facturasFiltradas(): Datum[] {
     if (!this.filtroId && !this.filtroName) {
       return this.facturas;
     }
 
-    const filtroId = this.filtroId ? this.filtroId.toString() : null;
+    const filtroId = this.filtroId ? this.filtroId.toLowerCase() : null;
     const filtroName = this.filtroName ? this.filtroName.toLowerCase() : null;
 
-    const facturasFiltradas = this.facturas.data.filter((factura) => {
+    const facturasFiltradas = this.facturas.filter((factura) => {
       const cumpleFiltroId = filtroId
-        ? factura.number.toString().includes(filtroId)
+        ? factura.number.toLowerCase().includes(filtroId)
         : true;
       const cumpleFiltroName = filtroName
-        ? factura.identification.toLowerCase().includes(filtroName)
+        ? factura.names.toLowerCase().includes(filtroName)
         : true;
 
       return cumpleFiltroId && cumpleFiltroName;
     });
 
-    return {
-      ...this.facturas,
-      data: facturasFiltradas,
-    };
+    return facturasFiltradas;
   }
 
   onCancelarFormulario(): void {
-    this.cargarfacturas();
+    this.loadFacturas(1);
     this.facturaSeleccionada = null;
     this.facturaNueva = false;
   }
 
   verfactura(id: string): void {
     console.log('Factura a ver:' + id);
+  }
+
+  verPdf(id: string): void {
+    console.log('Factura a PDF:' + id);
+  }
+
+  verXml(id: string): void {
+    console.log('Factura a XML:' + id);
   }
 
   eliminarfactura(id: string): void {
@@ -112,7 +117,7 @@ export class FacturaListComponent implements OnInit {
       confirmButtonText: 'Sí, eliminar',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.facturas.data = this.facturas.data.filter(
+        this.facturas = this.facturas.filter(
           (factura) => factura.number !== id
         );
         Swal.fire('¡Eliminado!', 'La factura ha sido eliminada.', 'success');

@@ -16,7 +16,7 @@ export class ProductoListComponent implements OnInit {
 
   productoSeleccionado: Producto | null = null;
   productoNuevo: boolean = false;
-
+  loader: boolean = true;
   constructor(private productoService: ProductoService) {}
 
   ngOnInit(): void {
@@ -33,6 +33,7 @@ export class ProductoListComponent implements OnInit {
         }
       },
       error: (error) => {
+        this.loader = false;
         console.error('Error al obtener productos:', error);
         Swal.fire({
           icon: 'error',

@@ -15,8 +15,16 @@
     </div>
   </div>
 
-  <div *ngIf="productos.length === 0; else table" class="bg-amber-300 text-center rounded-md">
-    No hay productos que mostrar!
+  <div *ngIf="productos.length === 0; else table" class="text-center rounded-md">
+    <div *ngIf="loader" class="flex flex-col items-center justify-center space-y-2">
+      <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-gray-700 font-semibold">Cargando...</p>
+    </div>
+    <div *ngIf="!loader" class="bg-amber-300">
+      <br>
+      <h1>No hay productos que mostrar!</h1>
+      <br>
+    </div>
   </div>
 
   <ng-template #table>
