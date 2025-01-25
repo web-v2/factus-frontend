@@ -1,11 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormArray,
-  Validators,
-  FormControl,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FacturaService } from '../../services/factura.service';
 import { ClienteService } from 'src/app/modules/clientes/services/cliente.service';
@@ -36,20 +30,20 @@ export class FacturaAddComponent implements OnInit {
       numbering_range_id: [null, [Validators.required]],
       reference_code: ['', [Validators.required]],
       observation: ['', [Validators.maxLength(255)]],
-      payment_method_code: [null, [Validators.required]],
+      payment_method_code: ['', [Validators.required]],
       customer: this.fb.group({
         identification: ['', [Validators.required]],
-        dv: [null, [Validators.required]],
+        dv: [''],
         company: [''],
         trade_name: [''],
         names: ['', [Validators.required]],
         address: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required]],
-        legal_organization_id: [null, [Validators.required]],
-        tribute_id: [null, [Validators.required]],
-        identification_document_id: [null, [Validators.required]],
-        municipality_id: [null, [Validators.required]],
+        legal_organization_id: ['', [Validators.required]],
+        tribute_id: ['', [Validators.required]],
+        identification_document_id: ['', [Validators.required]],
+        municipality_id: ['', [Validators.required]],
       }),
       items: this.fb.array([]),
     });
@@ -71,9 +65,9 @@ export class FacturaAddComponent implements OnInit {
         quantity: [1, [Validators.required, Validators.min(1)]],
         discount_rate: [0, [Validators.min(0), Validators.max(100)]],
         price: [0, [Validators.required, Validators.min(0)]],
-        tax_rate: ['19.00', [Validators.required]],
-        unit_measure_id: [null, [Validators.required]],
-        standard_code_id: [null, [Validators.required]],
+        tax_rate: ['0.00'],
+        unit_measure_id: [70, [Validators.required]],
+        standard_code_id: [1, [Validators.required]],
         is_excluded: [0, [Validators.required]],
         tribute_id: [null, [Validators.required]],
         withholding_taxes: this.fb.array([]),
@@ -117,7 +111,7 @@ export class FacturaAddComponent implements OnInit {
   }
 
   fetchProducto(i: number): void {
-    const cod = $('#code_reference_' + i).val() as string;
+    const cod = this.items.at(i).get('code_reference')?.value as string;
     if (!cod) {
       Swal.fire('Error', 'Por favor ingresa una referencia válida', 'error');
       return;
@@ -128,9 +122,22 @@ export class FacturaAddComponent implements OnInit {
         if (producto) {
           $('#name_' + i).val(producto.name);
           $('#price_' + i).val(producto.price);
+
+          this.items.at(i).patchValue({
+            code_reference: producto.code_reference,
+            name: producto.name,
+            quantity: producto.quantity,
+            discount_rate: producto.discount_rate,
+            price: producto.price,
+            tax_rate: producto.tax_rate,
+            unit_measure_id: producto.unit_measure_id,
+            standard_code_id: 1,
+            is_excluded: producto.is_excluded,
+            tribute_id: producto.tribute_id,
+          });
         }
-        /* console.log('Producto cargado:', producto);
-        console.log('FormArray actual:', this.facturaForm.get('items')?.value); */
+        /* console.log('Producto cargado:', producto);*/
+        console.log('FormArray actual:', this.facturaForm.get('items')?.value);
       },
       error: () => {
         Swal.fire(
@@ -138,7 +145,7 @@ export class FacturaAddComponent implements OnInit {
           'No se encontró un producto con esa refencia',
           'warning'
         );
-        this.facturaForm.get('items')?.reset(); // Limpiar los campos del producto
+        this.items.at(i).reset(); // Limpiar los campos del producto
       },
     });
   }
@@ -166,11 +173,8 @@ export class FacturaAddComponent implements OnInit {
   addWithholdingTax(itemIndex: number): void {
     this.getWithholdingTaxes(itemIndex).push(
       this.fb.group({
-        code: ['', [Validators.required]],
-        withholding_tax_rate: [
-          '',
-          [Validators.required, Validators.min(0), Validators.max(100)],
-        ],
+        code: [''],
+        withholding_tax_rate: [''],
       })
     );
   }
@@ -182,6 +186,7 @@ export class FacturaAddComponent implements OnInit {
   submitFactura(): void {
     console.log(this.facturaForm.value);
     if (this.facturaForm.invalid) {
+      console.log(this.facturaForm.controls);
       Swal.fire(
         'Error',
         'El formulario tiene errores, por favor verifícalo',
@@ -191,7 +196,7 @@ export class FacturaAddComponent implements OnInit {
     }
 
     const facturaData = this.facturaForm.value;
-    /*     this.facturaService.createFactura(facturaData).subscribe({
+    this.facturaService.createFactura(facturaData).subscribe({
       next: (response) => {
         Swal.fire('Éxito', 'Factura creada correctamente', 'success');
         this.facturaForm.reset();
@@ -199,10 +204,13 @@ export class FacturaAddComponent implements OnInit {
         this.addItem();
       },
       error: (err) => {
-        Swal.fire('Error', 'No se pudo crear la factura. Intenta de nuevo', 'error');
+        Swal.fire(
+          'Error',
+          'No se pudo crear la factura. Intenta de nuevo',
+          'error'
+        );
         console.error(err);
-      }
+      },
     });
- */
   }
 }
