@@ -94,16 +94,64 @@ export class FacturaListComponent implements OnInit {
     this.facturaNueva = false;
   }
 
-  verfactura(id: string): void {
-    console.log('Factura a ver:' + id);
+  verFactura(id: string): void {
+    this.facturaService.viewFacturaPDF(id).subscribe({
+      next: (pdfBlob: Blob) => {
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.open(pdfUrl, '_blank');
+      },
+      error: (error) => {
+        this.loader = false;
+        console.error('Error al obtener la factura:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar la factura',
+          text: 'Hubo un error. Intente nuevamente.',
+        });
+      },
+    });
   }
 
-  verPdf(id: string): void {
-    console.log('Factura a PDF:' + id);
+  descargarPdf(numeroFactura: string): void {
+    this.facturaService.viewFacturaPDF(numeroFactura).subscribe({
+      next: (pdfBlob: Blob) => {
+        const link = document.createElement('a');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        link.href = pdfUrl;
+        link.download = `factura_${numeroFactura}.pdf`;
+        link.click();
+        URL.revokeObjectURL(pdfUrl); // Limpia la URL generada
+      },
+      error: (error) => {
+        console.error('Error al descargar la factura:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al descargar factura',
+          text: 'No se pudo descargar la factura. Intente nuevamente.',
+        });
+      },
+    });
   }
 
-  verXml(id: string): void {
-    console.log('Factura a XML:' + id);
+  descargarXml(numeroFactura: string): void {
+    this.facturaService.getXml(numeroFactura).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Factura-${numeroFactura}.xml`;
+        link.click();
+        window.URL.revokeObjectURL(url); // Limpia el objeto URL
+      },
+      error: (error) => {
+        console.error('Error al descargar el XML:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al descargar el XML',
+          text: 'No se pudo conectar con el servidor. Intente nuevamente.',
+        });
+      },
+    });
   }
 
   eliminarfactura(id: string): void {

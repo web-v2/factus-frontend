@@ -51,4 +51,17 @@ export class ProductoService {
       })
     );
   }
+
+  getProductoById(id: string): Observable<Producto> {
+    const urlPeticion = `${this.apiUrl}/productos/${id}`;
+    return this.http.get<Producto>(urlPeticion).pipe(
+      tap((response) => {
+        console.log('Respuesta del servicio:', response);
+      }),
+      catchError((error) => {
+        console.error('Error en el servicio:', error);
+        return throwError(() => new Error('Error al conectar con la API.'));
+      })
+    );
+  }
 }

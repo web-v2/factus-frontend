@@ -1,10 +1,208 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  FormControl,
+} from '@angular/forms';
+import { Router } from '@angular/router';
+import { FacturaService } from '../../services/factura.service';
+import { ClienteService } from 'src/app/modules/clientes/services/cliente.service';
+import { Cliente } from 'src/app/modules/clientes/interfaces/cliente.interfaces';
+import { ProductoService } from 'src/app/modules/productos/services/producto.service';
+import { Producto } from 'src/app/modules/productos/interfaces/producto.interfaces';
+import Swal from 'sweetalert2';
+import * as $ from 'jquery';
 @Component({
   selector: 'app-factura-add',
   templateUrl: './factura-add.component.html',
-  styleUrls: ['./factura-add.component.css']
+  styleUrls: ['./factura-add.component.css'],
 })
-export class FacturaAddComponent {
+export class FacturaAddComponent implements OnInit {
+  facturaForm: FormGroup;
+  dataCliente: Cliente | null = null;
+  dataProducto: Producto[] = [];
 
+  constructor(
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    private facturaService: FacturaService,
+    private clienteService: ClienteService,
+    private productoService: ProductoService,
+    private router: Router
+  ) {
+    this.facturaForm = this.fb.group({
+      numbering_range_id: [null, [Validators.required]],
+      reference_code: ['', [Validators.required]],
+      observation: ['', [Validators.maxLength(255)]],
+      payment_method_code: [null, [Validators.required]],
+      customer: this.fb.group({
+        identification: ['', [Validators.required]],
+        dv: [null, [Validators.required]],
+        company: [''],
+        trade_name: [''],
+        names: ['', [Validators.required]],
+        address: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required]],
+        legal_organization_id: [null, [Validators.required]],
+        tribute_id: [null, [Validators.required]],
+        identification_document_id: [null, [Validators.required]],
+        municipality_id: [null, [Validators.required]],
+      }),
+      items: this.fb.array([]),
+    });
+  }
+
+  ngOnInit(): void {
+    this.addItem();
+  }
+
+  get items(): FormArray {
+    return this.facturaForm.get('items') as FormArray;
+  }
+
+  addItem(): void {
+    this.items.push(
+      this.fb.group({
+        code_reference: ['', [Validators.required]],
+        name: ['', [Validators.required]],
+        quantity: [1, [Validators.required, Validators.min(1)]],
+        discount_rate: [0, [Validators.min(0), Validators.max(100)]],
+        price: [0, [Validators.required, Validators.min(0)]],
+        tax_rate: ['19.00', [Validators.required]],
+        unit_measure_id: [null, [Validators.required]],
+        standard_code_id: [null, [Validators.required]],
+        is_excluded: [0, [Validators.required]],
+        tribute_id: [null, [Validators.required]],
+        withholding_taxes: this.fb.array([]),
+      })
+    );
+  }
+
+  fetchCliente(): void {
+    const identification = $('#identification').val() as number;
+    if (!identification) {
+      Swal.fire(
+        'Error',
+        'Por favor ingresa una identificación válida',
+        'error'
+      );
+      return;
+    }
+
+    this.clienteService.getClienteById(identification).subscribe({
+      next: (cliente) => {
+        if (cliente) {
+          this.facturaForm.get('customer')?.patchValue(cliente);
+          $('#dv').val('' + cliente.dv);
+          $('#names').val(cliente.names);
+          $('#address').val(cliente.address);
+          $('#email').val(cliente.email);
+          $('#phone').val(cliente.phone);
+          this.cdr.detectChanges();
+        }
+        this.dataCliente = cliente;
+      },
+      error: () => {
+        Swal.fire(
+          'Error',
+          'No se encontró un cliente con esa identificación',
+          'warning'
+        );
+        this.facturaForm.get('customer')?.reset();
+      },
+    });
+  }
+
+  fetchProducto(i: number): void {
+    const cod = $('#code_reference_' + i).val() as string;
+    if (!cod) {
+      Swal.fire('Error', 'Por favor ingresa una referencia válida', 'error');
+      return;
+    }
+
+    this.productoService.getProductoById(cod).subscribe({
+      next: (producto) => {
+        if (producto) {
+          $('#name_' + i).val(producto.name);
+          $('#price_' + i).val(producto.price);
+        }
+        /* console.log('Producto cargado:', producto);
+        console.log('FormArray actual:', this.facturaForm.get('items')?.value); */
+      },
+      error: () => {
+        Swal.fire(
+          'Error',
+          'No se encontró un producto con esa refencia',
+          'warning'
+        );
+        this.facturaForm.get('items')?.reset(); // Limpiar los campos del producto
+      },
+    });
+  }
+
+  newCliente(): void {
+    this.router.navigate(['clientes']);
+  }
+
+  removeItem(index: number): void {
+    if (this.items.length > 1) {
+      this.items.removeAt(index);
+    } else {
+      Swal.fire(
+        'Error',
+        'Debe haber al menos un producto en la factura',
+        'warning'
+      );
+    }
+  }
+
+  getWithholdingTaxes(itemIndex: number): FormArray {
+    return this.items.at(itemIndex).get('withholding_taxes') as FormArray;
+  }
+
+  addWithholdingTax(itemIndex: number): void {
+    this.getWithholdingTaxes(itemIndex).push(
+      this.fb.group({
+        code: ['', [Validators.required]],
+        withholding_tax_rate: [
+          '',
+          [Validators.required, Validators.min(0), Validators.max(100)],
+        ],
+      })
+    );
+  }
+
+  removeWithholdingTax(itemIndex: number, taxIndex: number): void {
+    this.getWithholdingTaxes(itemIndex).removeAt(taxIndex);
+  }
+
+  submitFactura(): void {
+    console.log(this.facturaForm.value);
+    if (this.facturaForm.invalid) {
+      Swal.fire(
+        'Error',
+        'El formulario tiene errores, por favor verifícalo',
+        'error'
+      );
+      return;
+    }
+
+    const facturaData = this.facturaForm.value;
+    /*     this.facturaService.createFactura(facturaData).subscribe({
+      next: (response) => {
+        Swal.fire('Éxito', 'Factura creada correctamente', 'success');
+        this.facturaForm.reset();
+        this.items.clear();
+        this.addItem();
+      },
+      error: (err) => {
+        Swal.fire('Error', 'No se pudo crear la factura. Intenta de nuevo', 'error');
+        console.error(err);
+      }
+    });
+ */
+  }
 }

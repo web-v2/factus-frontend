@@ -98,21 +98,21 @@
                 <!-- Botón Ver -->
                 <button
                   class="bg-zinc-800 text-white px-2 py-1 rounded-lg hover:bg-slate-400"
-                  (click)="verfactura(factura.number)"
+                  (click)="verFactura(factura.number)"
                 >
                   <i class="fas fa-eye"></i> Ver
                 </button>
                 <!-- Botón Ver PDF -->
                 <button
                   class="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-700"
-                  (click)="verPdf(factura.number)"
+                  (click)="descargarPdf(factura.number)"
                 >
                   <i class="fas fa-file-pdf"></i> PDF
                 </button>
                 <!-- Botón Ver XML -->
                 <button
                   class="bg-yellow-500 text-white px-2 py-1 rounded-lg hover:bg-yellow-600"
-                  (click)="verXml(factura.number)"
+                  (click)="descargarXml(factura.number)"
                 >
                   <i class="fas fa-file-code"></i> XML
                 </button>

@@ -6,11 +6,6 @@ import { environment } from 'src/environments/environment';
 import { Facturas } from '../interfaces/facturas.interfaces';
 import { sendFactura } from '../interfaces/sendFactura.interfaces';
 
-interface RespFacturas {
-  status: string;
-  message: string;
-  data: Facturas[];
-}
 @Injectable({
   providedIn: 'root',
 })
@@ -71,9 +66,79 @@ export class FacturaService {
       );
   }
 
-  /* newProducto(producto: Factura): Observable<void> {
-    const url = `${this.apiUrl}/productos/new`;
-    return this.http.post<void>(url, producto).pipe(
+  viewFacturaPDF(num: string): Observable<Blob> {
+    const urlPeticion = `${this.apiUrl}/v1/bills/download-pdf/${num}`;
+    const token = localStorage.getItem('access_token');
+
+    return this.http
+      .get<any>(urlPeticion, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .pipe(
+        map((response) => {
+          try {
+            const binaryData = atob(response.data.pdf_base_64_encoded);
+            const byteNumbers = new Uint8Array(binaryData.length);
+
+            for (let i = 0; i < binaryData.length; i++) {
+              byteNumbers[i] = binaryData.charCodeAt(i);
+            }
+
+            return new Blob([byteNumbers], { type: 'application/pdf' });
+          } catch (e) {
+            throw new Error('Error al decodificar la cadena base64.');
+          }
+        }),
+        catchError((error) => {
+          console.error('Error en el servicio:', error);
+          return throwError(() => new Error('Error al conectar con la API.'));
+        })
+      );
+  }
+
+  getXml(num: string): Observable<Blob> {
+    const urlPeticion = `${this.apiUrl}/v1/bills/download-xml/${num}`;
+    const token = localStorage.getItem('access_token');
+
+    return this.http
+      .get<any>(urlPeticion, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .pipe(
+        map((response) => {
+          const xmlBase64 = response.data.xml_base_64_encoded;
+          if (!xmlBase64 || typeof xmlBase64 !== 'string') {
+            throw new Error(
+              `El campo xml_base_64_encoded no es válido: ${xmlBase64}`
+            );
+          }
+          const binaryData = atob(xmlBase64.replace(/\s/g, '')); // Elimina espacios si los hay
+          const byteNumbers = new Uint8Array(binaryData.length);
+
+          for (let i = 0; i < binaryData.length; i++) {
+            byteNumbers[i] = binaryData.charCodeAt(i);
+          }
+
+          return new Blob([byteNumbers], { type: 'application/xml' });
+        }),
+        catchError((error) => {
+          console.error('Error al descargar el XML:', error);
+          return throwError(() => new Error('Error al descargar el XML.'));
+        })
+      );
+  }
+
+  createFactura(facturaData: sendFactura): Observable<void> {
+    const url = `${this.apiUrl}/bills/validate`;
+    return this.http.post<void>(url, facturaData).pipe(
       tap((response) => {
         console.log('Respuesta del servicio:', response);
       }),
@@ -82,395 +147,6 @@ export class FacturaService {
         return throwError(() => new Error('Error al conectar con la API.'));
       })
     );
-  } */
-
-  getFacturasMock(): Observable<Facturas> {
-    const data: Facturas = {
-      data: [
-        {
-          id: 400,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000203',
-          api_client_name: 'Halltec',
-          reference_code: 'I3',
-          identification: '123456789',
-          graphic_representation_name: 'Alan Turing',
-          company: '',
-          trade_name: '',
-          names: 'Alan Turing',
-          email: 'alanturing@enigmasas.com',
-          total: '90000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 1,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '17-07-2024 03:54:10 PM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-        {
-          id: 397,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000202',
-          reference_code: null,
-          identification: '1100970785',
-          graphic_representation_name: 'Pepito Perez',
-          company: '',
-          trade_name: null,
-          names: 'Pepito Perez',
-          email: 'pepito@hotmail.com',
-          total: '50000.00',
-          status: 0,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 1,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '17-07-2024 09:57:47 AM',
-          credit_notes: [
-            {
-              id: 105,
-              number: 'NC62',
-            },
-          ],
-          debit_notes: [
-            {
-              id: 43,
-              number: 'ND28',
-            },
-          ],
-        },
-        {
-          id: 396,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000201',
-          reference_code: null,
-          identification: '1100970785',
-          graphic_representation_name: 'Pepito Perez',
-          company: '',
-          trade_name: null,
-          names: 'Pepito Perez',
-          email: 'pepito@hotmail.com',
-          total: '27000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 1,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '17-07-2024 09:46:05 AM',
-          credit_notes: [
-            {
-              id: 106,
-              number: 'NC63',
-            },
-          ],
-          debit_notes: [],
-        },
-        {
-          id: 386,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000200',
-          reference_code: null,
-          identification: '12345666',
-          graphic_representation_name: 'Pepito Perez',
-          company: '',
-          trade_name: null,
-          names: 'Pepito Perez',
-          email: 'pepito@hotmail.com',
-          total: '27000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 1,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '16-07-2024 09:44:08 PM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-        {
-          id: 377,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000199',
-          reference_code: null,
-          identification: '06141002791018',
-          graphic_representation_name: 'Pepito Perez',
-          company: '',
-          trade_name: '',
-          names: 'Pepito Perez',
-          email: null,
-          total: '50000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 0,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '08-07-2024 04:24:27 PM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-        {
-          id: 376,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000198',
-          reference_code: null,
-          identification: '900825759',
-          graphic_representation_name: 'Halltec S.a.s',
-          company: 'Halltec S.a.s',
-          trade_name: null,
-          names: '',
-          email: null,
-          total: '90000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 0,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '08-07-2024 04:15:06 PM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-        {
-          id: 375,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000197',
-          reference_code: null,
-          identification: '900825759',
-          graphic_representation_name: 'Halltec S.a.s',
-          company: 'Halltec S.a.s',
-          trade_name: null,
-          names: '',
-          email: null,
-          total: '90000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 0,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '08-07-2024 03:43:33 PM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-        {
-          id: 374,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000196',
-          reference_code: null,
-          identification: '9247016',
-          graphic_representation_name: 'Ryley Von',
-          company: '',
-          trade_name: '',
-          names: 'Ryley Von',
-          email: 'sydnie27@hotmail.com',
-          total: '90000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 1,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '08-07-2024 03:31:22 PM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-        {
-          id: 373,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000195',
-          reference_code: null,
-          identification: '222222222222',
-          graphic_representation_name: 'Consumidor final',
-          company: '',
-          trade_name: null,
-          names: 'Consumidor final',
-          email: '',
-          total: '20000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 0,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '01-07-2024 11:17:59 AM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-        {
-          id: 372,
-          document: {
-            code: '01',
-            name: 'Factura electrónica de Venta',
-          },
-          number: 'SETP990000194',
-          reference_code: null,
-          identification: '122345566',
-          graphic_representation_name: 'Pepito Perez',
-          company: '',
-          trade_name: null,
-          names: 'Pepito Perez',
-          email: 'pepito@hotmail.com',
-          total: '20000.00',
-          status: 1,
-          errors: [
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-            'Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suminstrado.',
-          ],
-          send_email: 1,
-          has_claim: 0,
-          is_negotiable_instrument: 0,
-          payment_form: {
-            code: '1',
-            name: 'Pago de contado',
-          },
-          created_at: '27-06-2024 04:48:24 PM',
-          credit_notes: [],
-          debit_notes: [],
-        },
-      ],
-      pagination: {
-        total: 162,
-        per_page: 10,
-        current_page: 1,
-        last_page: 17,
-        from: 1,
-        to: 10,
-        links: [
-          {
-            url: null,
-            label: '&laquo; Anterior',
-            active: false,
-          },
-          {
-            url: 'http://api.test/v1/bills?page=1',
-            label: 1,
-            active: true,
-            page: 1,
-          },
-          {
-            url: 'http://api.test/v1/bills?page=2',
-            label: 2,
-            active: false,
-            page: 2,
-          },
-          {
-            url: 'http://api.test/v1/bills?page=3',
-            label: 3,
-            active: false,
-            page: 3,
-          },
-          {
-            url: 'http://api.test/v1/bills?page=4',
-            label: 4,
-            active: false,
-            page: 4,
-          },
-          {
-            url: null,
-            label: '...',
-            active: false,
-          },
-          {
-            url: 'http://api.test/v1/bills?page=17',
-            label: 17,
-            active: false,
-            page: 17,
-          },
-          {
-            url: 'http://api.test/v1/bills?page=2',
-            label: 'Siguiente &raquo;',
-            active: false,
-          },
-        ],
-      },
-    };
-    return of(data);
   }
 
   postFacturasMock(): Observable<sendFactura[]> {

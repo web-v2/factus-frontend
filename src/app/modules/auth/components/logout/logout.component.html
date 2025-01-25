@@ -1,7 +1,7 @@
 <!-- src/app/modules/auth/components/logout/logout.component.html -->
 <div class="relative inline-block text-left">
   <table (click)="toggleDropdown()" class="hover:bg-indigo-400 rounded-sm">
-    <tr>
+    <tr [class]="isDropdownOpen?'bg-indigo-400':''">
       <th>
         <span class="mr-2 font-semibold text-gray-700">{{ userSS }}</span>
       </th>
@@ -22,6 +22,9 @@
     *ngIf="isDropdownOpen"
     class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10"
   >
+    <button class="block px-4 py-2 text-sm bg-indigo-300 text-gray-700 hover:bg-indigo-400 w-full text-left rounded-sm">
+      Perfil
+    </button>
     <button (click)="logout()" class="block px-4 py-2 text-sm bg-indigo-300 text-gray-700 hover:bg-indigo-400 w-full text-left rounded-sm">
       Cerrar sesión
     </button>

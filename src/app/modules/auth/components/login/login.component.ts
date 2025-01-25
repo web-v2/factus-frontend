@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
           console.log('Inicio de sesión exitoso:', response);
           Swal.fire({
             icon: 'success',
-            title: `Bienvenid@: ${this.email}`,
+            title: `Bienvenid@: ${localStorage.getItem('userSession')}`,
           });
           this.errorMessage = 'Login exitoso';
           this.router.navigate(['/dashboard']);

@@ -51,4 +51,17 @@ export class ClienteService {
       })
     );
   }
+
+  getClienteById(id: number): Observable<Cliente> {
+    const urlPeticion = `${this.apiUrl}/clientes/${id}`;
+    return this.http.get<Cliente>(urlPeticion).pipe(
+      tap((response) => {
+        console.log('Respuesta del servicio:', response);
+      }),
+      catchError((error) => {
+        console.error('Error en el servicio:', error);
+        return throwError(() => new Error('Error al conectar con la API.'));
+      })
+    );
+  }
 }

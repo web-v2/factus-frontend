@@ -1,1 +1,228 @@
-<p>factura-add works!</p>
+<div class="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+  <h2 class="text-3xl font-bold text-gray-800 mb-6">Crear Factura</h2>
+
+  <form [formGroup]="facturaForm" (ngSubmit)="submitFactura()" class="space-y-6">
+    <!-- Datos Generales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label for="numbering_range_id" class="block font-medium text-gray-700">Rango de numeración</label>
+        <input
+          id="numbering_range_id"
+          type="number"
+          formControlName="numbering_range_id"
+          class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Ejemplo: 8"
+        />
+      </div>
+      <div>
+        <label for="reference_code" class="block font-medium text-gray-700">Código de referencia</label>
+        <input
+          id="reference_code"
+          type="text"
+          formControlName="reference_code"
+          class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Ejemplo: 12345931AT"
+        />
+      </div>
+      <div>
+        <label for="observation" class="block font-medium text-gray-700">Observación</label>
+        <textarea
+          id="observation"
+          formControlName="observation"
+          class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          rows="3"
+          placeholder="Descripción general de la venta"
+        ></textarea>
+      </div>
+      <div>
+        <label for="payment_method_code" class="block font-medium text-gray-700">Método de pago</label>
+        <input
+          id="payment_method_code"
+          type="number"
+          formControlName="payment_method_code"
+          class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Ejemplo: 10"
+        />
+      </div>
+    </div>
+
+    <!-- Datos del Cliente -->
+    <fieldset class="border border-gray-300 rounded-lg p-4">
+      <legend class="text-lg font-bold text-gray-700">Datos del Cliente</legend>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div class="flex items-end space-x-4">
+          <div class="flex-grow">
+            <label for="identification" class="block font-medium text-gray-700">Identificación</label>
+            <input
+              id="identification"
+              type="number"
+              formControlName="identification"
+              class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <button
+            type="button"
+            (click)="fetchCliente()"
+            class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            <i class="fas fa-search"></i>
+          </button>
+          <button
+            type="button"
+            (click)="newCliente()"
+            class="px-2 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          >
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div>
+          <label for="dv" class="block font-medium text-gray-700">Dígito de Verificación</label>
+          <input
+            id="dv"
+            type="number"
+            formControlName="dv"
+            readonly
+            class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label for="names" class="block font-medium text-gray-700">Nombre del Cliente</label>
+          <input
+            id="names"
+            type="text"
+            readonly
+            formControlName="names"
+            class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label for="address" class="block font-medium text-gray-700">Dirección</label>
+          <input
+            id="address"
+            type="text"
+            readonly
+            formControlName="address"
+            class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label for="email" class="block font-medium text-gray-700">Email</label>
+          <input
+            id="email"
+            type="email"
+            readonly
+            formControlName="email"
+            class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label for="phone" class="block font-medium text-gray-700">Teléfono</label>
+          <input
+            id="phone"
+            type="text"
+            readonly
+            formControlName="phone"
+            class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Productos -->
+    <div class="border border-gray-300 rounded-lg p-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-gray-700">Productos</h3>
+        <button
+          type="button"
+          (click)="addItem()"
+          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        >
+        <i class="fas fa-plus"></i>
+          Agregar
+        </button>
+      </div>
+      <div formArrayName="items" class="space-y-4 mt-4">
+        <div
+          *ngFor="let item of items.controls; let i = index"
+          [formGroupName]="i"
+          class="p-4 bg-gray-100 rounded-lg border border-gray-300"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-end space-x-4">
+              <div class="flex-grow">
+              <label for="code_reference_{{ i }}" class="block font-medium text-gray-700">Código</label>
+              <input
+                id="code_reference_{{ i }}"
+                type="text"
+                formControlName="code_reference"
+                class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+              </div>
+              <button
+                type="button"
+                (click)="fetchProducto(i)"
+                class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+              <button
+                type="button"
+                (click)="newCliente()"
+                class="px-2 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div>
+              <label for="name_{{ i }}" class="block font-medium text-gray-700">Nombre</label>
+              <input
+                id="name_{{ i }}"
+                type="text"
+                readonly
+                formControlName="name"
+                class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label for="quantity_{{ i }}" class="block font-medium text-gray-700">Cantidad</label>
+              <input
+                id="quantity_{{ i }}"
+                type="number"
+                formControlName="quantity"
+                class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label for="price_{{ i }}" class="block font-medium text-gray-700">Precio</label>
+              <input
+                id="price_{{ i }}"
+                type="number"
+                formControlName="price"
+                class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            (click)="removeItem(i)"
+            class="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+          <i class="far fa-trash-alt"></i>
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón de Envío -->
+    <div class="flex justify-end">
+      <button
+        type="submit"
+        class="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600"
+      >
+      <i class="fas fa-save"></i>
+        Crear Factura
+      </button>
+    </div>
+  </form>
+</div>
