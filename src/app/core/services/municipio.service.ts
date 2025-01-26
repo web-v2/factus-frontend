@@ -1,4 +1,4 @@
-// src/app/services/municipio.service.ts
+// src/app/core/services/municipio.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';

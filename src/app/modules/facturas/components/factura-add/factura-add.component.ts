@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FacturaService } from '../../services/factura.service';
@@ -6,6 +6,8 @@ import { ClienteService } from 'src/app/modules/clientes/services/cliente.servic
 import { Cliente } from 'src/app/modules/clientes/interfaces/cliente.interfaces';
 import { ProductoService } from 'src/app/modules/productos/services/producto.service';
 import { Producto } from 'src/app/modules/productos/interfaces/producto.interfaces';
+import { MetodosPago } from 'src/app/core/interfaces/metodos-pago.interfaces';
+import { MetodosPagoService } from 'src/app/core/services/metodosPago.service';
 import Swal from 'sweetalert2';
 import * as $ from 'jquery';
 @Component({
@@ -14,9 +16,11 @@ import * as $ from 'jquery';
   styleUrls: ['./factura-add.component.css'],
 })
 export class FacturaAddComponent implements OnInit {
+  @Output() cancelarFormulario = new EventEmitter<void>();
   facturaForm: FormGroup;
   dataCliente: Cliente | null = null;
   dataProducto: Producto[] = [];
+  metodosPago: MetodosPago[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -24,6 +28,7 @@ export class FacturaAddComponent implements OnInit {
     private facturaService: FacturaService,
     private clienteService: ClienteService,
     private productoService: ProductoService,
+    private metodosPagoService: MetodosPagoService,
     private router: Router
   ) {
     this.facturaForm = this.fb.group({
@@ -51,6 +56,7 @@ export class FacturaAddComponent implements OnInit {
 
   ngOnInit(): void {
     this.addItem();
+    this.cargarMetodosPago();
   }
 
   get items(): FormArray {
@@ -212,5 +218,31 @@ export class FacturaAddComponent implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  cargarMetodosPago(): void {
+    this.metodosPagoService.getMetodosPago().subscribe({
+      next: (response) => {
+        if (response) {
+          this.metodosPago = response;
+        } else {
+          console.warn(
+            'La API respondió pero no retornó datos válidos:',
+            response
+          );
+        }
+      },
+      error: (error) => {
+        console.error('Error al conectar con la API:', error);
+        Swal.fire({
+          icon: 'error',
+          title: `Error al obtener los metodos de pagos: ${error.message}`,
+        });
+      },
+    });
+  }
+
+  cancelar(): void {
+    this.cancelarFormulario.emit();
   }
 }

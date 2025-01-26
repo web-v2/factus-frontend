@@ -36,13 +36,15 @@
       </div>
       <div>
         <label for="payment_method_code" class="block font-medium text-gray-700">Método de pago</label>
-        <input
-          id="payment_method_code"
-          type="number"
+        <select
           formControlName="payment_method_code"
-          class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Ejemplo: 10"
-        />
+          id="payment_method_code"
+          class="w-full p-2 border rounded-lg"
+          >
+          <option *ngFor="let mt of metodosPago" [value]="mt.codigo">
+            {{mt.nombre}}
+          </option>
+        </select>
       </div>
     </div>
 
@@ -216,6 +218,11 @@
 
     <!-- Botón de Envío -->
     <div class="flex justify-end">
+      <button type="button" (click)="cancelar()" class="px-6 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600">
+        <i class="fas fa-cancel-alt"></i>
+        Cancelar
+      </button>
+      <br>
       <button
         type="submit"
         class="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600"

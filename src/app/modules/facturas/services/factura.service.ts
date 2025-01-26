@@ -137,85 +137,94 @@ export class FacturaService {
   }
 
   createFactura(facturaData: sendFactura): Observable<void> {
-    const url = `${this.apiUrl}/bills/validate`;
-    return this.http.post<void>(url, facturaData).pipe(
-      tap((response) => {
-        console.log('Respuesta del servicio:', response);
-      }),
-      catchError((error) => {
-        console.error('Error en el servicio:', error);
-        return throwError(() => new Error('Error al conectar con la API.'));
+    const url = `${this.apiUrl}/v1/bills/validate`;
+    const token = localStorage.getItem('access_token');
+    return this.http
+      .post<void>(url, facturaData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
       })
-    );
+      .pipe(
+        tap((response) => {
+          console.log('Respuesta del servicio:', response);
+        }),
+        catchError((error) => {
+          console.error('Error en el servicio:', error);
+          return throwError(() => new Error('Error al conectar con la API.'));
+        })
+      );
   }
 
   postFacturasMock(): Observable<sendFactura[]> {
     const clientes = [
       {
-        identification: 123456789,
+        identification: '123456789',
         dv: '1',
         company: 'Empresa Alpha',
         trade_name: 'Comercial Alpha',
         names: 'Juan Pérez',
         address: 'Calle 123 #45-67',
         email: 'juan.perez@alpha.com',
-        phone: 3001234567,
+        phone: '3001234567',
         legal_organization_id: 1,
         tribute_id: 2,
         identification_document_id: 1,
         municipality_id: 101,
       },
       {
-        identification: 987654321,
+        identification: '987654321',
         dv: '2',
         company: 'Empresa Beta',
         trade_name: 'Comercial Beta',
         names: 'Ana Gómez',
         address: 'Carrera 9 #8-17',
         email: 'ana.gomez@beta.com',
-        phone: 3109876543,
+        phone: '3109876543',
         legal_organization_id: 2,
         tribute_id: 1,
         identification_document_id: 2,
         municipality_id: 102,
       },
       {
-        identification: 456789123,
+        identification: '456789123',
         dv: '3',
         company: 'Empresa Gamma',
         trade_name: 'Comercial Gamma',
         names: 'Carlos López',
         address: 'Avenida 5 #6-78',
         email: 'carlos.lopez@gamma.com',
-        phone: 3204567891,
+        phone: '3204567891',
         legal_organization_id: 1,
         tribute_id: 2,
         identification_document_id: 3,
         municipality_id: 103,
       },
       {
-        identification: 321654987,
+        identification: '321654987',
         dv: '4',
         company: 'Empresa Delta',
         trade_name: 'Comercial Delta',
         names: 'María Fernández',
         address: 'Calle 2 #34-56',
         email: 'maria.fernandez@delta.com',
-        phone: 3303216549,
+        phone: '3303216549',
         legal_organization_id: 2,
         tribute_id: 1,
         identification_document_id: 1,
         municipality_id: 104,
       },
       {
-        identification: 654321987,
+        identification: '654321987',
         dv: '5',
         company: 'Empresa Epsilon',
         trade_name: 'Comercial Epsilon',
         names: 'Luis Martínez',
         address: 'Carrera 7 #8-21',
         email: 'luis.martinez@epsilon.com',
-        phone: 3406543219,
+        phone: '3406543219',
         legal_organization_id: 1,
         tribute_id: 2,
         identification_document_id: 2,
