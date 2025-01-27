@@ -1,6 +1,6 @@
 export interface Cliente {
   identification: string;
-  dv?: string; // Digito de verificacion. se envia si es nit
+  dv?: number; // Digito de verificacion. se envia si es nit
   company?: string;
   trade_name?: string;
   names: string;

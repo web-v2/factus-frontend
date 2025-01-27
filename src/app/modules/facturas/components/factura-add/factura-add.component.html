@@ -159,6 +159,18 @@
                 formControlName="code_reference"
                 class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
+              <input
+                type="hidden"
+                id="discount_rate_{{ i }}"
+                formControlName="discount_rate"
+                name="discount_rate"
+                value="0">
+              <input
+                type="hidden"
+                id="tax_rate_{{ i }}"
+                formControlName="tax_rate"
+                name="tax_rate"
+                value="0.00">
               </div>
               <button
                 type="button"

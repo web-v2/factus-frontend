@@ -3,7 +3,6 @@ import {
   EventEmitter,
   OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -21,14 +20,14 @@ export class ClienteAddComponent implements OnInit {
   @Output() cancelarFormulario = new EventEmitter<void>();
   municipios: Municipio[] = [];
   clienteNuevo: Cliente = {
-    identification: 0,
-    dv: '',
+    identification: '0',
+    dv: 0,
     company: '',
     trade_name: '',
     names: '',
     address: '',
     email: '',
-    phone: 0,
+    phone: '0',
     legal_organization_id: 0,
     tribute_id: 0,
     identification_document_id: 0,

@@ -19,7 +19,7 @@
       <!-- Campos condicionales para Persona Jurídica -->
       <div class="mb-4" *ngIf="clienteSeleccionado.legal_organization_id == 1">
         <label class="block text-sm font-medium text-gray-700">Dv</label>
-        <input [(ngModel)]="clienteSeleccionado.dv" name="dv" type="text"
+        <input [(ngModel)]="clienteSeleccionado.dv" name="dv" type="number"
           class="w-full p-2 border rounded-lg">
       </div>
 

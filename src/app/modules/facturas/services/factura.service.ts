@@ -136,11 +136,12 @@ export class FacturaService {
       );
   }
 
-  createFactura(facturaData: sendFactura): Observable<void> {
+  createFactura(facturaData: sendFactura): Observable<any> {
     const url = `${this.apiUrl}/v1/bills/validate`;
     const token = localStorage.getItem('access_token');
+
     return this.http
-      .post<void>(url, facturaData, {
+      .post<any>(url, facturaData, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -151,6 +152,7 @@ export class FacturaService {
         tap((response) => {
           console.log('Respuesta del servicio:', response);
         }),
+        map((response) => response.data),
         catchError((error) => {
           console.error('Error en el servicio:', error);
           return throwError(() => new Error('Error al conectar con la API.'));
@@ -158,7 +160,7 @@ export class FacturaService {
       );
   }
 
-  postFacturasMock(): Observable<sendFactura[]> {
+  /* postFacturasMock(): Observable<sendFactura[]> {
     const clientes = [
       {
         identification: '123456789',
@@ -323,5 +325,5 @@ export class FacturaService {
       },
     ];
     return of(data);
-  }
+  } */
 }

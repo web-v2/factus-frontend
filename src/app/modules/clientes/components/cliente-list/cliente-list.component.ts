@@ -21,7 +21,6 @@ export class ClienteListComponent implements OnInit {
   constructor(private clienteService: ClienteService) {}
 
   ngOnInit(): void {
-    console.log('Inicio Component ClienteListaComponent');
     this.cargarClientes();
   }
 
@@ -83,7 +82,7 @@ export class ClienteListComponent implements OnInit {
     this.clienteNuevo = false;
   }
 
-  eliminarCliente(id: number): void {
+  eliminarCliente(id: number | string): void {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción no se puede deshacer',
@@ -95,7 +94,7 @@ export class ClienteListComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.clientes = this.clientes.filter(
-          (cliente) => cliente.identification !== id
+          (cliente) => cliente.identification !== id + ''
         );
         Swal.fire('¡Eliminado!', 'El cliente ha sido eliminado.', 'success');
       }

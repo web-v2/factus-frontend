@@ -1,4 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FacturaService } from '../../services/factura.service';
@@ -71,7 +77,7 @@ export class FacturaAddComponent implements OnInit {
         quantity: [1, [Validators.required, Validators.min(1)]],
         discount_rate: [0, [Validators.min(0), Validators.max(100)]],
         price: [0, [Validators.required, Validators.min(0)]],
-        tax_rate: ['0.00'],
+        tax_rate: [0],
         unit_measure_id: [70, [Validators.required]],
         standard_code_id: [1, [Validators.required]],
         is_excluded: [0, [Validators.required]],
@@ -133,9 +139,9 @@ export class FacturaAddComponent implements OnInit {
             code_reference: producto.code_reference,
             name: producto.name,
             quantity: producto.quantity,
-            discount_rate: producto.discount_rate,
+            discount_rate: 0,
             price: producto.price,
-            tax_rate: producto.tax_rate,
+            tax_rate: '0.00',
             unit_measure_id: producto.unit_measure_id,
             standard_code_id: 1,
             is_excluded: producto.is_excluded,
@@ -204,7 +210,15 @@ export class FacturaAddComponent implements OnInit {
     const facturaData = this.facturaForm.value;
     this.facturaService.createFactura(facturaData).subscribe({
       next: (response) => {
-        Swal.fire('Éxito', 'Factura creada correctamente', 'success');
+        Swal.fire(
+          'Éxito',
+          `Factura ${response.bill.number} creada correctamente`,
+          'success'
+        ).then((result) => {
+          if (result.isConfirmed) {
+            this.cancelar();
+          }
+        });
         this.facturaForm.reset();
         this.items.clear();
         this.addItem();
