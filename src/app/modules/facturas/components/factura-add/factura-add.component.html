@@ -3,50 +3,133 @@
 
   <form [formGroup]="facturaForm" (ngSubmit)="submitFactura()" class="space-y-6">
     <!-- Datos Generales -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label for="numbering_range_id" class="block font-medium text-gray-700">Rango de numeración</label>
-        <input
-          id="numbering_range_id"
-          type="number"
-          formControlName="numbering_range_id"
-          class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Ejemplo: 8"
-        />
+    <fieldset class="border border-gray-300 rounded-lg p-4">
+      <legend class="text-lg font-bold text-gray-700">Datos Generales</legend>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Rango de Numeración -->
+        <div>
+          <label for="numbering_range_id" class="block font-medium text-gray-700">Rango de numeración</label>
+          <select
+            name="numbering_range_id"
+            id="numbering_range_id"
+            formControlName="numbering_range_id"
+            class="w-full p-2 border rounded-lg"
+          >
+            <option value="8" selected>Factura de Venta</option>
+            <option value="9">Nota Crédito</option>
+            <option value="10">Nota Débito</option>
+          </select>
+          <div *ngIf="facturaForm.get('numbering_range_id')?.invalid && facturaForm.get('numbering_range_id')?.touched" class="text-red-500 text-sm">
+            Campo obligatorio.
+          </div>
+        </div>
+
+        <!-- Código de Referencia -->
+        <div>
+          <label for="reference_code" class="block font-medium text-gray-700">Código de referencia</label>
+          <input
+            id="reference_code"
+            type="text"
+            formControlName="reference_code"
+            class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+          <div *ngIf="facturaForm.get('reference_code')?.invalid && facturaForm.get('reference_code')?.touched" class="text-red-500 text-sm">
+            Campo obligatorio.
+          </div>
+        </div>
       </div>
-      <div>
-        <label for="reference_code" class="block font-medium text-gray-700">Código de referencia</label>
-        <input
-          id="reference_code"
-          type="text"
-          formControlName="reference_code"
-          class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Ejemplo: 12345931AT"
-        />
+
+      <!-- Período de Facturación -->
+      <div formGroupName="billing_period" class="mt-6">
+        <h3 class="text-md font-semibold text-gray-700 mb-4">Período de Facturación</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Fecha Inicio -->
+          <div>
+            <label for="start_date" class="block font-medium text-gray-700">Fecha Inicio</label>
+            <input
+              type="date"
+              name="start_date"
+              id="start_date"
+              formControlName="start_date"
+              class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+            <div *ngIf="facturaForm.get('billing_period.start_date')?.invalid && facturaForm.get('billing_period.start_date')?.touched" class="text-red-500 text-sm">
+              Campo obligatorio.
+            </div>
+          </div>
+
+          <!-- Fecha Final -->
+          <div>
+            <label for="end_date" class="block font-medium text-gray-700">Fecha Final</label>
+            <input
+              type="date"
+              name="end_date"
+              id="end_date"
+              formControlName="end_date"
+              class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+            <div *ngIf="facturaForm.get('billing_period.end_date')?.invalid && facturaForm.get('billing_period.end_date')?.touched" class="text-red-500 text-sm">
+              Campo obligatorio.
+            </div>
+          </div>
+
+          <!-- Hora Inicio -->
+          <div>
+            <label for="start_time" class="block font-medium text-gray-700">Hora Inicio</label>
+            <input
+              type="time"
+              name="start_time"
+              id="start_time"
+              formControlName="start_time"
+              class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- Hora Final -->
+          <div>
+            <label for="end_time" class="block font-medium text-gray-700">Hora Final</label>
+            <input
+              type="time"
+              name="end_time"
+              id="end_time"
+              formControlName="end_time"
+              class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
       </div>
-      <div>
+
+      <!-- Observación -->
+      <div class="mt-6">
         <label for="observation" class="block font-medium text-gray-700">Observación</label>
         <textarea
           id="observation"
           formControlName="observation"
           class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          rows="3"
+          rows="2"
           placeholder="Descripción general de la venta"
         ></textarea>
       </div>
-      <div>
+
+      <!-- Método de Pago -->
+      <div class="mt-6">
         <label for="payment_method_code" class="block font-medium text-gray-700">Método de pago</label>
         <select
           formControlName="payment_method_code"
           id="payment_method_code"
           class="w-full p-2 border rounded-lg"
-          >
+        >
           <option *ngFor="let mt of metodosPago" [value]="mt.codigo">
-            {{mt.nombre}}
+            {{ mt.nombre }}
           </option>
         </select>
+        <div *ngIf="facturaForm.get('payment_method_code')?.invalid && facturaForm.get('payment_method_code')?.touched" class="text-red-500 text-sm">
+          Campo obligatorio.
+        </div>
       </div>
-    </div>
+    </fieldset>
+
 
     <!-- Datos del Cliente -->
     <fieldset class="border border-gray-300 rounded-lg p-4">
@@ -61,6 +144,7 @@
               formControlName="identification"
               class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
             />
+            <div *ngIf="facturaForm.get('identification')?.invalid && facturaForm.get('identification')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
           </div>
           <button
             type="button"
@@ -131,9 +215,9 @@
     </fieldset>
 
     <!-- Productos -->
-    <div class="border border-gray-300 rounded-lg p-4">
+    <fieldset class="border border-gray-300 rounded-lg p-4">
+      <legend class="text-lg font-bold text-gray-700">Productos</legend>
       <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-gray-700">Productos</h3>
         <button
           type="button"
           (click)="addItem()"
@@ -152,25 +236,14 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-end space-x-4">
               <div class="flex-grow">
-              <label for="code_reference_{{ i }}" class="block font-medium text-gray-700">Código</label>
-              <input
-                id="code_reference_{{ i }}"
-                type="text"
-                formControlName="code_reference"
-                class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-              <input
-                type="hidden"
-                id="discount_rate_{{ i }}"
-                formControlName="discount_rate"
-                name="discount_rate"
-                value="0">
-              <input
-                type="hidden"
-                id="tax_rate_{{ i }}"
-                formControlName="tax_rate"
-                name="tax_rate"
-                value="0.00">
+                <label for="code_reference_{{ i }}" class="block font-medium text-gray-700">Código</label>
+                <input
+                  id="code_reference_{{ i }}"
+                  type="text"
+                  formControlName="code_reference"
+                  class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div *ngIf="facturaForm.get('code_reference')?.invalid && facturaForm.get('code_reference')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
               </div>
               <button
                 type="button"
@@ -198,6 +271,23 @@
               />
             </div>
             <div>
+              <label for="discount_rate_{{ i }}" class="block font-medium text-gray-700">% Descuento</label>
+              <input
+                id="discount_rate_{{ i }}"
+                type="text"
+                formControlName="discount_rate"
+                class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label for="tax_rate_{{ i }}" class="block font-medium text-gray-700">IVA</label>
+              <select id="tax_rate_{{ i }}" formControlName="tax_rate"
+                name="tax_rate" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                  <option value="19.00">SI</option>
+                  <option value="0.00">NO</option>
+                </select>
+            </div>
+            <div>
               <label for="quantity_{{ i }}" class="block font-medium text-gray-700">Cantidad</label>
               <input
                 id="quantity_{{ i }}"
@@ -205,6 +295,7 @@
                 formControlName="quantity"
                 class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
+              <div *ngIf="facturaForm.get('quantity')?.invalid && facturaForm.get('quantity')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
             </div>
             <div>
               <label for="price_{{ i }}" class="block font-medium text-gray-700">Precio</label>
@@ -214,6 +305,7 @@
                 formControlName="price"
                 class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
+              <div *ngIf="facturaForm.get('price')?.invalid && facturaForm.get('price')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
             </div>
           </div>
           <button
@@ -226,7 +318,7 @@
           </button>
         </div>
       </div>
-    </div>
+    </fieldset>
 
     <!-- Botón de Envío -->
     <div class="flex justify-end">

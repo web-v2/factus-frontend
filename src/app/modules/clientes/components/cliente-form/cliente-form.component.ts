@@ -52,7 +52,7 @@ export class ClienteFormComponent implements OnInit {
   }
 
   cargarMunicipios(): void {
-    this.municipioService.getMunicipiosMock().subscribe({
+    this.municipioService.getMunicipios().subscribe({
       next: (response) => {
         if (response) {
           this.municipios = response;

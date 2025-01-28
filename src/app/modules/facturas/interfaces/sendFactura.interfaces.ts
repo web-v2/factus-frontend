@@ -14,7 +14,7 @@ export interface sendFactura {
 
 interface Periodo {
   start_date: string;
-  start_time: string;
+  start_time?: string;
   end_date: string;
-  end_time: string;
+  end_time?: string;
 }

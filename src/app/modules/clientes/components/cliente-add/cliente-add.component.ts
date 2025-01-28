@@ -1,9 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import * as $ from 'jquery';
@@ -98,7 +93,7 @@ export class ClienteAddComponent implements OnInit {
   }
 
   cargarMunicipios(): void {
-    this.municipioService.getMunicipiosMock().subscribe({
+    this.municipioService.getMunicipios().subscribe({
       next: (response) => {
         if (response) {
           this.municipios = response;

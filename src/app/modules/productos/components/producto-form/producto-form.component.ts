@@ -55,7 +55,7 @@ export class ProductoFormComponent implements OnInit {
   }
 
   cargarUnidadMedidas(): void {
-    this.utilService.getUnidadMedidasMock().subscribe({
+    this.utilService.getUnidadMedidas().subscribe({
       next: (response) => {
         if (response) {
           this.unidadMedidas = response;
@@ -77,7 +77,7 @@ export class ProductoFormComponent implements OnInit {
   }
 
   cargarTributos(): void {
-    this.utilService.getTributosMock().subscribe({
+    this.utilService.getTributos().subscribe({
       next: (response) => {
         if (response) {
           this.tributos = response;

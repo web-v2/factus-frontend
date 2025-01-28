@@ -5,7 +5,14 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { FacturaService } from '../../services/factura.service';
 import { ClienteService } from 'src/app/modules/clientes/services/cliente.service';
@@ -16,6 +23,7 @@ import { MetodosPago } from 'src/app/core/interfaces/metodos-pago.interfaces';
 import { MetodosPagoService } from 'src/app/core/services/metodosPago.service';
 import Swal from 'sweetalert2';
 import * as $ from 'jquery';
+import { sendFactura } from '../../interfaces/sendFactura.interfaces';
 @Component({
   selector: 'app-factura-add',
   templateUrl: './factura-add.component.html',
@@ -27,7 +35,7 @@ export class FacturaAddComponent implements OnInit {
   dataCliente: Cliente | null = null;
   dataProducto: Producto[] = [];
   metodosPago: MetodosPago[] = [];
-
+  referenceCode: string = '';
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
@@ -37,9 +45,35 @@ export class FacturaAddComponent implements OnInit {
     private metodosPagoService: MetodosPagoService,
     private router: Router
   ) {
+    this.facturaForm = this.fb.group({});
+  }
+
+  validateBillingPeriod(group: AbstractControl): ValidationErrors | null {
+    const startDate = group.get('start_date')?.value;
+    const endDate = group.get('end_date')?.value;
+
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return {
+        invalidPeriod:
+          'La fecha de inicio no puede ser posterior a la fecha final.',
+      };
+    }
+    return null;
+  }
+
+  ngOnInit(): void {
     this.facturaForm = this.fb.group({
       numbering_range_id: [null, [Validators.required]],
       reference_code: ['', [Validators.required]],
+      billing_period: this.fb.group(
+        {
+          start_date: ['', Validators.required],
+          start_time: [''],
+          end_date: ['', Validators.required],
+          end_time: [''],
+        },
+        { validators: this.validateBillingPeriod }
+      ),
       observation: ['', [Validators.maxLength(255)]],
       payment_method_code: ['', [Validators.required]],
       customer: this.fb.group({
@@ -58,11 +92,26 @@ export class FacturaAddComponent implements OnInit {
       }),
       items: this.fb.array([]),
     });
+    this.cargarMetodosPago();
+    this.addItem();
   }
 
-  ngOnInit(): void {
-    this.addItem();
-    this.cargarMetodosPago();
+  ngAfterViewInit(): void {
+    this.codReferencia();
+  }
+  codReferencia(): void {
+    const now = new Date();
+    const data = `SV${now.getFullYear()}${this.padZero(
+      now.getMonth() + 1
+    )}${this.padZero(now.getDate())}${this.padZero(
+      now.getHours()
+    )}${this.padZero(now.getMinutes())}${this.padZero(now.getSeconds())}`;
+    $('#reference_code').val(data);
+    this.facturaForm.get('reference_code')?.patchValue(data);
+  }
+
+  padZero(num: number): string {
+    return num < 10 ? `0${num}` : num.toString();
   }
 
   get items(): FormArray {
@@ -77,7 +126,7 @@ export class FacturaAddComponent implements OnInit {
         quantity: [1, [Validators.required, Validators.min(1)]],
         discount_rate: [0, [Validators.min(0), Validators.max(100)]],
         price: [0, [Validators.required, Validators.min(0)]],
-        tax_rate: [0],
+        tax_rate: [''],
         unit_measure_id: [70, [Validators.required]],
         standard_code_id: [1, [Validators.required]],
         is_excluded: [0, [Validators.required]],
@@ -134,14 +183,14 @@ export class FacturaAddComponent implements OnInit {
         if (producto) {
           $('#name_' + i).val(producto.name);
           $('#price_' + i).val(producto.price);
-
+          const iva = producto.is_excluded == 1 ? '0.00' : '19.00';
           this.items.at(i).patchValue({
             code_reference: producto.code_reference,
             name: producto.name,
             quantity: producto.quantity,
             discount_rate: 0,
             price: producto.price,
-            tax_rate: '0.00',
+            tax_rate: iva,
             unit_measure_id: producto.unit_measure_id,
             standard_code_id: 1,
             is_excluded: producto.is_excluded,
@@ -210,6 +259,7 @@ export class FacturaAddComponent implements OnInit {
     const facturaData = this.facturaForm.value;
     this.facturaService.createFactura(facturaData).subscribe({
       next: (response) => {
+        this.sendFactura(response.bill);
         Swal.fire(
           'Éxito',
           `Factura ${response.bill.number} creada correctamente`,
@@ -258,5 +308,9 @@ export class FacturaAddComponent implements OnInit {
 
   cancelar(): void {
     this.cancelarFormulario.emit();
+  }
+
+  sendFactura(billData: any): void {
+    this.facturaService.sendToLocalApi(billData).subscribe();
   }
 }
