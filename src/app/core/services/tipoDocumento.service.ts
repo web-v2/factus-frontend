@@ -1,23 +1,23 @@
-// src/app/core/services/metodosPago.service.ts
+// src/app/core/services/tipoDocumento.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MetodosPago } from '../interfaces/metodos-pago.interfaces';
+import { TipoDocumentos } from '../interfaces/tipo-documentos.interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MetodosPagoService {
+export class TipoDocumentoService {
   private apiUrl = environment.apiUrlLocal;
 
   constructor(private http: HttpClient) {}
 
-  getMetodosPago(): Observable<any[]> {
-    const url = `${this.apiUrl}/metodos-pago`;
-    return this.http.get<MetodosPago[]>(url).pipe(
+  getTipoDocumentos(): Observable<any[]> {
+    const url = `${this.apiUrl}/tipo-documentos`;
+    return this.http.get<TipoDocumentos[]>(url).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio[Metodos-Pago]:', response);
+        console.log('Respuesta del servicio[Tipos-Documentos]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);

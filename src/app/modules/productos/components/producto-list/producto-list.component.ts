@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-producto-list',
   templateUrl: './producto-list.component.html',
-  styleUrls: ['./producto-list.component.css']
+  styleUrls: ['./producto-list.component.css'],
 })
 export class ProductoListComponent implements OnInit {
   productos: Producto[] = [];
@@ -49,6 +49,7 @@ export class ProductoListComponent implements OnInit {
   }
 
   productosFiltrados(): Producto[] {
+    if (!this.productos) return [];
     if (!this.filtroId && !this.filtroName) {
       return this.productos;
     }

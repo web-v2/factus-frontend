@@ -10,10 +10,12 @@ import {
 import Swal from 'sweetalert2';
 import * as $ from 'jquery';
 import 'select2';
-import { MunicipioService } from 'src/app/core/services/municipio.service';
 import { ClienteService } from 'src/app/modules/clientes/services/cliente.service';
-import { Municipio } from 'src/app/core/interfaces/municipio.interfaces';
 import { Cliente } from 'src/app/modules/clientes/interfaces/cliente.interfaces';
+import { TipoDocumentoService } from 'src/app/core/services/tipoDocumento.service';
+import { TipoDocumentos } from 'src/app/core/interfaces/tipo-documentos.interfaces';
+import { MunicipioService } from 'src/app/core/services/municipio.service';
+import { Municipio } from 'src/app/core/interfaces/municipio.interfaces';
 
 @Component({
   selector: 'app-cliente-form',
@@ -21,15 +23,18 @@ import { Cliente } from 'src/app/modules/clientes/interfaces/cliente.interfaces'
 })
 export class ClienteFormComponent implements OnInit {
   municipios: Municipio[] = [];
+  tipoDocumentos: TipoDocumentos[] = [];
   @Input() clienteSeleccionado: Cliente | null = null;
   @Output() cancelarFormulario = new EventEmitter<void>();
   constructor(
     private clienteService: ClienteService,
+    private tipoDocumentoService: TipoDocumentoService,
     private municipioService: MunicipioService
   ) {}
 
   ngOnInit(): void {
     this.cargarMunicipios();
+    this.cargarTipoDocumentos();
   }
   ngAfterViewInit(): void {
     $('#municipality').select2({
@@ -49,6 +54,28 @@ export class ClienteFormComponent implements OnInit {
 
   ngOnDestroy(): void {
     $('#municipality').select2('destroy');
+  }
+
+  cargarTipoDocumentos(): void {
+    this.tipoDocumentoService.getTipoDocumentos().subscribe({
+      next: (response) => {
+        if (response) {
+          this.tipoDocumentos = response;
+        } else {
+          console.warn(
+            'La API respondió pero no retornó datos válidos:',
+            response
+          );
+        }
+      },
+      error: (error) => {
+        console.error('Error al conectar con la API:', error);
+        Swal.fire({
+          icon: 'error',
+          title: `Error al obtener los tipos de documentos: ${error.message}`,
+        });
+      },
+    });
   }
 
   cargarMunicipios(): void {

@@ -18,11 +18,6 @@
       <!-- Campos condicionales para Persona Jurídica -->
       <div *ngIf="clienteForm.get('legal_organization_id')?.value == 1">
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700">Dv</label>
-          <input formControlName="dv" type="number" class="w-full p-2 border rounded-lg" value="0">
-        </div>
-
-        <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700">Company</label>
           <input formControlName="company" type="text" class="w-full p-2 border rounded-lg">
         </div>
@@ -38,17 +33,7 @@
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Tipo Ident.</label>
         <select formControlName="identification_document_id" class="w-full p-2 border rounded-lg">
-          <option value="1">Registro civil</option>
-          <option value="2">Tarjeta de identidad</option>
-          <option value="3">Cédula de ciudadanía</option>
-          <option value="4">Tarjeta de extranjería</option>
-          <option value="5">Cédula de extranjería</option>
-          <option value="6">NIT</option>
-          <option value="7">Pasaporte</option>
-          <option value="8">Documento de identificación extranjero</option>
-          <option value="9">PEP</option>
-          <option value="10">NIT otro país</option>
-          <option value="11">NUIP*</option>
+          <option *ngFor="let tp of tipoDocumentos" [value]="tp.ID">{{tp.Nombre}}</option>
         </select>
         <div *ngIf="clienteForm.get('identification_document_id')?.invalid && clienteForm.get('identification_document_id')?.touched" class="text-red-500 text-sm">Campo obligatorio.</div>
       </div>
@@ -56,8 +41,13 @@
       <!-- Identificación -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Identificación</label>
-        <input formControlName="identification" type="number" class="w-full p-2 border rounded-lg">
+        <input formControlName="identification" type="number" class="w-full p-2 border rounded-lg" (ngModelChange)="onSurnameChange($event)">
         <div *ngIf="clienteForm.get('identification')?.invalid && clienteForm.get('identification')?.touched" class="text-red-500 text-sm">Campo obligatorio. Sólo números permitidos.</div>
+      </div>
+
+      <div class="mb-4" *ngIf="clienteForm.get('legal_organization_id')?.value == 1">
+        <label class="block text-sm font-medium text-gray-700">Dv</label>
+        <input formControlName="dv" type="number" class="w-full p-2 border rounded-lg" value="0">
       </div>
 
       <!-- Nombre -->
@@ -112,7 +102,6 @@
           </option>
 
         </select>
-        <p>Seleccionado: {{ municipioId }}</p>
         <div *ngIf="clienteForm.get('municipality_id')?.invalid && clienteForm.get('municipality_id')?.touched" class="text-red-500 text-sm">
           Campo obligatorio.
         </div>

@@ -9,6 +9,7 @@ import { Datum, Facturas } from '../../interfaces/facturas.interfaces';
 })
 export class TablePaginationComponent implements OnInit {
   @Output() facturasChange = new EventEmitter<Datum[]>();
+  //pagination: { links: { url: string | null; page: number }[] } = { links: [] };
   pagination: any = {};
 
   constructor(private facturaService: FacturaService) {}
@@ -19,7 +20,7 @@ export class TablePaginationComponent implements OnInit {
 
   loadPage(page: number): void {
     this.facturaService.getBills(page).subscribe((response: Facturas) => {
-      this.pagination = response.pagination;
+      this.pagination = response.pagination || [];
       this.facturasChange.emit(response.data);
     });
   }

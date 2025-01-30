@@ -23,7 +23,6 @@ import { MetodosPago } from 'src/app/core/interfaces/metodos-pago.interfaces';
 import { MetodosPagoService } from 'src/app/core/services/metodosPago.service';
 import Swal from 'sweetalert2';
 import * as $ from 'jquery';
-import { sendFactura } from '../../interfaces/sendFactura.interfaces';
 @Component({
   selector: 'app-factura-add',
   templateUrl: './factura-add.component.html',
@@ -46,19 +45,6 @@ export class FacturaAddComponent implements OnInit {
     private router: Router
   ) {
     this.facturaForm = this.fb.group({});
-  }
-
-  validateBillingPeriod(group: AbstractControl): ValidationErrors | null {
-    const startDate = group.get('start_date')?.value;
-    const endDate = group.get('end_date')?.value;
-
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      return {
-        invalidPeriod:
-          'La fecha de inicio no puede ser posterior a la fecha final.',
-      };
-    }
-    return null;
   }
 
   ngOnInit(): void {
@@ -94,11 +80,37 @@ export class FacturaAddComponent implements OnInit {
     });
     this.cargarMetodosPago();
     this.addItem();
-  }
-
-  ngAfterViewInit(): void {
     this.codReferencia();
   }
+
+  validateBillingPeriod(group: AbstractControl): ValidationErrors | null {
+    const startDate = group.get('start_date')?.value;
+    const endDate = group.get('end_date')?.value;
+
+    if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'El formulario tiene errores',
+        html: `
+          <p class="text-red-500 font-semibold mb-2">
+            Por favor, revisa los siguientes campos:
+          </p>
+          <ul class="list-disc text-left pl-5 text-sm text-gray-700">
+            <li class="text-red-600 font-bold">
+              La fecha de inicio no puede ser igual/posterior a la fecha final.
+            </li>
+          </ul>
+        `,
+        confirmButtonText: 'Aceptar',
+      });
+      return {
+        invalidPeriod:
+          'La fecha de inicio no puede ser igual/posterior a la fecha final.',
+      };
+    }
+    return null;
+  }
+
   codReferencia(): void {
     const now = new Date();
     const data = `SV${now.getFullYear()}${this.padZero(
@@ -245,20 +257,19 @@ export class FacturaAddComponent implements OnInit {
   }
 
   submitFactura(): void {
-    console.log(this.facturaForm.value);
     if (this.facturaForm.invalid) {
       console.log(this.facturaForm.controls);
-      Swal.fire(
-        'Error',
-        'El formulario tiene errores, por favor verifícalo',
-        'error'
-      );
+      this.showValidationErrors();
       return;
+    } else {
+      console.log('Formulario OK:', this.facturaForm.value);
     }
 
+    this.showProcessingModal();
     const facturaData = this.facturaForm.value;
     this.facturaService.createFactura(facturaData).subscribe({
       next: (response) => {
+        this.closeProcessingModal();
         this.sendFactura(response.bill);
         Swal.fire(
           'Éxito',
@@ -274,6 +285,7 @@ export class FacturaAddComponent implements OnInit {
         this.addItem();
       },
       error: (err) => {
+        this.closeProcessingModal();
         Swal.fire(
           'Error',
           'No se pudo crear la factura. Intenta de nuevo',
@@ -282,6 +294,72 @@ export class FacturaAddComponent implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  getInvalidControls(formGroup: FormGroup): string[] {
+    const invalidControls: string[] = [];
+
+    Object.keys(formGroup.controls).forEach((key) => {
+      const control = formGroup.get(key);
+
+      if (control instanceof FormGroup) {
+        // Si el control es un FormGroup, buscar dentro de él
+        invalidControls.push(...this.getInvalidControls(control));
+      } else if (control?.invalid) {
+        invalidControls.push(key);
+      }
+    });
+
+    return invalidControls;
+  }
+
+  showValidationErrors() {
+    const invalidFields = this.getInvalidControls(this.facturaForm);
+
+    if (invalidFields.length > 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'El formulario tiene errores',
+        html: `
+          <p class="text-red-500 font-semibold mb-2">
+            Por favor, revisa los siguientes campos:
+          </p>
+          <ul class="list-disc text-left pl-5 text-sm text-gray-700">
+            ${invalidFields
+              .map(
+                (field) =>
+                  `<li class="text-red-600 font-bold">${this.getFieldLabel(
+                    field
+                  )}</li>`
+              )
+              .join('')}
+          </ul>
+        `,
+        confirmButtonText: 'Aceptar',
+      });
+    }
+  }
+
+  getFieldLabel(field: string): string {
+    const fieldLabels: { [key: string]: string } = {
+      numbering_range_id: 'Rango de Numeración',
+      reference_code: 'Código de Referencia',
+      start_date: 'Fecha de Inicio',
+      end_date: 'Fecha de Fin',
+      payment_method_code: 'Método de Pago',
+      identification: 'Identificación',
+      names: 'Nombres',
+      address: 'Dirección',
+      email: 'Correo Electrónico',
+      phone: 'Teléfono',
+      legal_organization_id: 'Organización Legal',
+      tribute_id: 'Tributo',
+      identification_document_id: 'Tipo de Documento',
+      municipality_id: 'Municipio',
+      items: 'Ítems',
+    };
+
+    return fieldLabels[field] || field; // Retorna un alias o el nombre original
   }
 
   cargarMetodosPago(): void {
@@ -312,5 +390,20 @@ export class FacturaAddComponent implements OnInit {
 
   sendFactura(billData: any): void {
     this.facturaService.sendToLocalApi(billData).subscribe();
+  }
+
+  showProcessingModal(): void {
+    Swal.fire({
+      title: 'Procesando...',
+      text: 'Por favor, espera mientras se crea la factura.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
+  closeProcessingModal(): void {
+    Swal.close();
   }
 }

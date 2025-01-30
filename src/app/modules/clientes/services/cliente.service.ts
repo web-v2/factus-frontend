@@ -17,7 +17,7 @@ export class ClienteService {
     const url = `${this.apiUrl}/clientes/list`;
     return this.http.get<Cliente[]>(url).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Clientes]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);
@@ -30,7 +30,7 @@ export class ClienteService {
     const url = `${this.apiUrl}/clientes/`;
     return this.http.put<void>(url, cliente).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Clientes]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);
@@ -43,7 +43,7 @@ export class ClienteService {
     const url = `${this.apiUrl}/clientes/new`;
     return this.http.post<void>(url, cliente).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Clientes]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);
@@ -56,7 +56,7 @@ export class ClienteService {
     const urlPeticion = `${this.apiUrl}/clientes/${id}`;
     return this.http.get<Cliente>(urlPeticion).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Clientes]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);

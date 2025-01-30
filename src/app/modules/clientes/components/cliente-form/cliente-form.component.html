@@ -38,17 +38,7 @@
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Tipo Ident.</label>
         <select [(ngModel)]="clienteSeleccionado.identification_document_id" name="identification_document_id" required class="w-full p-2 border rounded-lg">
-          <option value="1">Registro civil</option>
-          <option value="2">Tarjeta de identidad</option>
-          <option value="3">Cédula de ciudadanía</option>
-          <option value="4">Tarjeta de extranjería</option>
-          <option value="5">Cédula de extranjería</option>
-          <option value="6">NIT</option>
-          <option value="7">Pasaporte</option>
-          <option value="8">Documento de identificación extranjero</option>
-          <option value="9">PEP</option>
-          <option value="10">NIT otro país</option>
-          <option value="11">NUIP*</option>
+          <option *ngFor="let tp of tipoDocumentos" [value]="tp.ID">{{tp.Nombre}}</option>
         </select>
       </div>
 

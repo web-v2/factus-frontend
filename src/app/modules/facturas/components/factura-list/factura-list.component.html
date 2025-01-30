@@ -71,7 +71,7 @@
           </thead>
           <tbody>
             <tr
-              *ngFor="let factura of facturasFiltradas(); let i = index"
+              *ngFor="let factura of facturasFiltradas()?.length ? facturasFiltradas():[]; let i = index"
               class="hover:bg-red-200 transition-colors"
             >
               <td class="py-2 px-4 border border-gray-300">{{ factura.number }}</td>

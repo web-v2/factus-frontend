@@ -37,7 +37,7 @@ export class FacturaListComponent implements OnInit {
           datafacturas.data &&
           Array.isArray(datafacturas.data)
         ) {
-          this.facturas = datafacturas.data;
+          this.facturas = datafacturas.data || [];
           this.pagination = datafacturas.pagination;
         } else {
           console.warn(
@@ -67,6 +67,7 @@ export class FacturaListComponent implements OnInit {
   }
 
   facturasFiltradas(): Datum[] {
+    if (!this.facturas) return [];
     if (!this.filtroId && !this.filtroName) {
       return this.facturas;
     }

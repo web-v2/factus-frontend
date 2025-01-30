@@ -17,7 +17,7 @@ export class ProductoService {
     const url = `${this.apiUrl}/productos/list`;
     return this.http.get<Producto[]>(url).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Productos]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);
@@ -30,7 +30,7 @@ export class ProductoService {
     const url = `${this.apiUrl}/productos`;
     return this.http.put<void>(url, producto).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Productos]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);
@@ -43,7 +43,7 @@ export class ProductoService {
     const url = `${this.apiUrl}/productos/new`;
     return this.http.post<void>(url, producto).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Productos]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);
@@ -56,7 +56,7 @@ export class ProductoService {
     const urlPeticion = `${this.apiUrl}/productos/${id}`;
     return this.http.get<Producto>(urlPeticion).pipe(
       tap((response) => {
-        console.log('Respuesta del servicio:', response);
+        console.log('Respuesta del servicio[Productos]:', response);
       }),
       catchError((error) => {
         console.error('Error en el servicio:', error);

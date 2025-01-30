@@ -70,7 +70,7 @@
         </thead>
         <tbody>
           <tr
-            *ngFor="let producto of productosFiltrados()"
+            *ngFor="let producto of productosFiltrados()?.length ? productosFiltrados() : []"
             class="hover:bg-gray-100"
           >
           <td class="py-2 px-4 border border-gray-300">{{ producto.code_reference }}</td>
