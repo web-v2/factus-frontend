@@ -19,14 +19,14 @@ export class ClienteAddComponent implements OnInit {
   municipios: Municipio[] = [];
   tipoDocumentos: TipoDocumentos[] = [];
   clienteNuevo: Cliente = {
-    identification: '0',
+    identification: '',
     dv: 0,
     company: '',
     trade_name: '',
     names: '',
     address: '',
     email: '',
-    phone: '0',
+    phone: '',
     legal_organization_id: 0,
     tribute_id: 0,
     identification_document_id: 0,
@@ -44,7 +44,7 @@ export class ClienteAddComponent implements OnInit {
   ) {
     this.nit
       .pipe(
-        debounceTime(3000) // ajusta el tiempo en milisegundos según tus necesidades
+        debounceTime(3000) // ajusta el tiempo
       )
       .subscribe((value) => {
         this.updateSurname(value);
@@ -58,7 +58,10 @@ export class ClienteAddComponent implements OnInit {
       company: [''],
       trade_name: [''],
       identification_document_id: ['', Validators.required],
-      identification: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+      identification: [
+        '',
+        [Validators.required, Validators.pattern(/^\d{7,10}$/)],
+      ],
       names: ['', [Validators.required, Validators.minLength(3)]],
       address: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -101,28 +104,18 @@ export class ClienteAddComponent implements OnInit {
       this.clienteNuevo.municipality_id = id;
       console.log('Municipio seleccionado:', this.municipioId);
     });
-    $('#identification').on('keyout', (event: any) => {
-      const id = event.target.value;
-      const organization_id = $('#legal_organization_id').val();
-      if (organization_id == 1) {
-        const dv = this.calcularDV(id);
-        $('#dv').val(dv + '');
-      }
-    });
   }
   onSurnameChange(event: any): void {
     this.nit.next(event);
   }
 
   updateSurname(surname: string): void {
-    const id = surname;
-    //const organization_id = $('#legal_organization_id').val();
-    const organization_id = 1;
+    const organization_id = this.clienteForm.get(
+      'legal_organization_id'
+    )?.value;
     if (organization_id == 1) {
-      //const dv = this.calcularDV(id);
-      let dv = this.calcularDV(id);
-      alert(dv);
-      $('#dv').val(dv + '');
+      let dv = this.calcularDV(surname);
+      this.clienteForm.get('dv')?.patchValue(dv);
     }
   }
   ngOnDestroy(): void {
@@ -201,53 +194,18 @@ export class ClienteAddComponent implements OnInit {
     }
   }
 
-  calcularDV(nit: string): number | false {
-    if (!/^\d+$/.test(nit)) {
-      return false;
+  calcularDV(nit: string | number): number {
+    const primes = [71, 67, 59, 53, 47, 43, 41, 37, 29, 23, 19, 17, 13, 7, 3];
+
+    let nitStr = nit.toString();
+    let sum = 0;
+    let j = primes.length - nitStr.length; // Ajuste si el NIT es más corto que la lista de primos
+
+    for (let i = 0; i < nitStr.length; i++) {
+      sum += parseInt(nitStr[i], 10) * primes[j + i];
     }
 
-    const arr: { [key: number]: number } = {
-      1: 3,
-      2: 7,
-      3: 13,
-      4: 17,
-      5: 19,
-      6: 23,
-      7: 29,
-      8: 37,
-      9: 41,
-      10: 43,
-      11: 47,
-      12: 53,
-      13: 59,
-      14: 67,
-      15: 71,
-    };
-
-    let x = 0;
-    let y = 0;
-    let z = nit.length;
-    let dv = 0;
-
-    console.log('tam:' + z);
-    z = 10;
-
-    for (let i = 0; i < z; i++) {
-      y = parseInt(nit.charAt(i));
-      console.log('ciclo:' + y);
-      x += y * arr[z - i];
-    }
-
-    y = x % 11;
-    console.log('x:' + y);
-    //dv = y > 1 ? 11 - y : y;
-    if (y > 1) {
-      dv = 11 - y;
-    } else {
-      dv = y;
-    }
-
-    console.log('Nit: ' + nit + 'Dv: ' + dv);
-    return dv;
+    let remainder = sum % 11;
+    return remainder < 2 ? remainder : 11 - remainder;
   }
 }

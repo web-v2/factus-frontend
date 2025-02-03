@@ -41,7 +41,7 @@
       <!-- Identificación -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Identificación</label>
-        <input formControlName="identification" type="number" class="w-full p-2 border rounded-lg" (ngModelChange)="onSurnameChange($event)">
+        <input formControlName="identification" type="text" class="w-full p-2 border rounded-lg" (ngModelChange)="onSurnameChange($event)">
         <div *ngIf="clienteForm.get('identification')?.invalid && clienteForm.get('identification')?.touched" class="text-red-500 text-sm">Campo obligatorio. Sólo números permitidos.</div>
       </div>
 
@@ -74,7 +74,7 @@
       <!-- Teléfono -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-        <input formControlName="phone" type="number" class="w-full p-2 border rounded-lg">
+        <input formControlName="phone" type="text" class="w-full p-2 border rounded-lg">
         <div *ngIf="clienteForm.get('phone')?.invalid && clienteForm.get('phone')?.touched" class="text-red-500 text-sm">Campo obligatorio. Sólo números entre 7 y 10 dígitos.</div>
       </div>
 
